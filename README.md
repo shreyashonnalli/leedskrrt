@@ -8,7 +8,7 @@ sc20l2s
 sc20mazp
 sc20rfm
 
-##kanban board
+## kanban board
 
 The link to our public trello [kanban board](https://trello.com/b/Svs7abIi).
 
