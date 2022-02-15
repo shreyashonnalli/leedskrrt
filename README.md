@@ -8,6 +8,10 @@ sc20l2s
 sc20mazp
 sc20rfm
 
+##kanban board
+
+The link to our public trello [kanban board](https://trello.com/b/Svs7abIi).
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
