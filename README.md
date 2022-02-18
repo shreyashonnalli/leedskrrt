@@ -8,9 +8,9 @@ sc20l2s
 sc20mazp
 sc20rfm
 
-## kanban board
+## Sprint board
 
-The link to our public trello [kanban board](https://trello.com/b/Svs7abIi).
+The link to our public trello [Sprint board](https://trello.com/b/Svs7abIi). 
 
 ## Getting started
 
