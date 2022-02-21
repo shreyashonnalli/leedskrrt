@@ -1,8 +1,8 @@
 from app import db
-import datetime
 
-# Model to store all the users
-class User(db.Model):
+
+# Customer account model
+class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(500))
-    password = db.Column(db.String(500))
+    email = db.Column(db.String, unique=True)
+    password = db.Column(db.String)
