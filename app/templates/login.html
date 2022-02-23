@@ -1,5 +1,30 @@
 {% extends "base.html" %}
+
 {% block content %}
-
-
+    <div class="container">
+        <h2 class="form-register-heading">Login</h2>
+        <form class="form-register" method="POST">
+            <!-- The tag below is used to prevent CSRF -->
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.email.label(class='form-control-label') }}
+                {{ form.email(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class='form-control-label') }}
+                {{ form.password(class_='form-control') }}
+            </div>
+            <div class="form-group">
+                <!-- Remember me checkbox -->
+                {{ form.remember.label }}
+                {{ form.remember() }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class_="btn btn-primary") }}
+            </div>
+        </form>
+        <div class="d-flex justify-content-around align-items-center">
+            <p>Don't have an account? <a href="{{ url_for('register') }}" id="register">Register</a></p>
+        </div>
+    </div>
 {% endblock %}
