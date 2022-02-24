@@ -1,6 +1,6 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm
 from .models import Customer, Scooter, Options
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
@@ -143,3 +143,11 @@ def book_scooter(scooter_id, option_id):
     db.session.commit()
     flash("Scooter booked")
     return redirect(url_for("viewscooters"))
+
+@app.route('/payment', methods=['GET', 'POST'])#the way this should work is that you get routed here after making a booking
+def payment():
+    form = PaymentForm()
+    if form.validate_on_submit():
+        flash("Payment Succesful")
+        return redirect(url_for("viewscooters"))
+    return render_template('payment.html', title='Payment', form=form)#instead of this, the available scooter should be updated
