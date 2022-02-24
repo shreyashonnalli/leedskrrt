@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
 from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm
-from .models import Customer, Scooter, Options
+from .models import Customer, Scooter, Options, Booking
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 
@@ -138,16 +138,27 @@ def mark_task(scooter_id):
 
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
 def book_scooter(scooter_id, option_id):
-    change = Scooter.query.get(scooter_id)
-    change.availability = False
+    scooter = Scooter.query.get(scooter_id)
+    scooter.availability = False
+    bookingOption = Options.query.get(option_id)
+    userId = current_user.get_id()
+    newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours)
+    db.session.add(newBooking)
     db.session.commit()
     flash("Scooter booked")
-    return redirect(url_for("viewscooters"))
+    return redirect(url_for("payment"))
+
+@app.route('/book_scooter/confirmation_page', methods=['GET', 'POST'])
+def confirmation_page():
+    customerId = current_user.get_id()
+    booking = Booking.query.filter_by(customerId=customerId).order_by(Booking.bookingId.desc()).first()
+    return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
+
 
 @app.route('/payment', methods=['GET', 'POST'])#the way this should work is that you get routed here after making a booking
 def payment():
     form = PaymentForm()
     if form.validate_on_submit():
         flash("Payment Succesful")
-        return redirect(url_for("viewscooters"))
+        return redirect(url_for("confirmation_page"))
     return render_template('payment.html', title='Payment', form=form)#instead of this, the available scooter should be updated

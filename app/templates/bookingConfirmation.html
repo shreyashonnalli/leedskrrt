@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>My Booking</h1>
+
+    <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
+
+          <h5><b>{{booking.bookingId}}</b></h5>
+          <h6><b>Scooter Number -</b> {{booking.scooterId}}</h6>
+            <h6><b>Customer - </b>{{booking.customerId}}</h6>
+            <h6><b>Price - </b>{{booking.price}}</h6>
+            <h6><b>Hours - </b>{{booking.hours}}</h6>
+      <hr>
+      <a href ="/" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Home</a>
+
+{% endblock %}
