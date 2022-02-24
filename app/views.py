@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm
-from .models import Customer
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm
+from .models import Customer, Scooter, Options
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 
@@ -98,3 +98,48 @@ def logout():
 def index():
     home={'description':'Welcome.'}
     return render_template('home.html', title='Home', home=home, account=current_user)
+
+@app.route('/addscooters', methods=['GET', 'POST'])
+def addscooters():
+    form = ScooterForm()
+    if form.validate_on_submit():
+        nlocation=request.form.get("location")
+        new_scooter=Scooter(location = nlocation, availability = True)
+        db.session.add(new_scooter)
+        db.session.commit()
+        flash("Scooter added")
+        return redirect(url_for("addscooters"))
+
+    return render_template('addscooters.html', title='Scooters', form=form)
+
+@app.route('/addoptions', methods=['GET', 'POST'])
+def addoptions():
+    form = OptionsForm()
+    if form.validate_on_submit():
+        nhours=request.form.get("hours")
+        nprice=request.form.get("price")
+        new_option=Options(hours = nhours, price = nprice)
+        db.session.add(new_option)
+        db.session.commit()
+        flash("Option added")
+        return redirect(url_for("addoptions"))
+
+    return render_template('addoptions.html', title='Options', form=form)
+
+@app.route('/viewscooters', methods=['GET', 'POST'])
+def viewscooters():
+    scooters = Scooter.query.all()
+    return render_template('viewscooters.html', title='Scooters', scooters=scooters)
+
+@app.route('/book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
+def mark_task(scooter_id):
+    options = Options.query.all()
+    return render_template('options.html', title='Options', options=options, id = scooter_id)
+
+@app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
+def book_scooter(scooter_id, option_id):
+    change = Scooter.query.get(scooter_id)
+    change.availability = False
+    db.session.commit()
+    flash("Scooter booked")
+    return redirect(url_for("viewscooters"))

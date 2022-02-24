@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Options</h1>
+<form action="" method="post" name="Add Options">
+    {{ form.hidden_tag() }}
+
+    <h6><b>Hours</b></h6>
+    {{ form.hours(class_='form-control') }}
+    {% for error in form.hours.errors %}
+     <div class="alert alert-danger w-100" role="alert">
+        [{{ error }}]
+     </div>
+    {% endfor %}
+
+    <h6><b>Price</b></h6>
+    {{ form.price(class_='form-control') }}
+    {% for error in form.price.errors %}
+     <div class="alert alert-danger w-100" role="alert">
+        [{{ error }}]
+     </div>
+    {% endfor %}
+
+    <p><input type="submit" class="btn btn-primary" value="Add"></p>
+</form>
+
+{% endblock %}
