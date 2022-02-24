@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>All Scooters</h1>
+
+    <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
+    {% for option in options %}
+          <h5><b>{{option.id}}</b></h5>
+          <h6><b>Hours -</b> {{option.hours}}</h6>
+          <h6><b>Price -</b> {{option.price}}</h6>
+          <a href ="/book_scooter/{{ id }}/{{ option.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
+      <hr>
+    {% endfor %}
+
+{% endblock %}

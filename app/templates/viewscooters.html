@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>All Scooters</h1>
+
+    <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
+    {% for scooter in scooters %}
+          <h5><b>{{scooter.id}}</b></h5>
+          <h6><b>Location -</b> {{scooter.location}}</h6>
+          {% if scooter.availability == True %}
+            <h6><b>Available - </b>Available</h6>
+              <a href ="/book_scooter/{{ scooter.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
+          {% endif %}
+          {% if scooter.availability == False %}
+            <h6><b>Available - </b>Not available</h6>
+          {% endif %}
+      <hr>
+    {% endfor %}
+
+{% endblock %}
