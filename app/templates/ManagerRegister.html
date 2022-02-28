@@ -6,18 +6,35 @@
         <form class="form-register" method="POST">
             <!-- The tag below is used to prevent CSRF -->
             {{ form.hidden_tag() }}
+
             <div class="form-group">
                 {{ form.email.label(class='form-control-label') }}
                 {{ form.email(class_='form-control') }}
             </div>
+
             <div class="form-group">
                 {{ form.password.label(class='form-control-label') }}
                 {{ form.password(class_='form-control') }}
             </div>
+
+            {% if form.password.errors %}<!-- for loop to display all errors if there are any-->
+            <ul class="errors">
+                {% for error in form.password.errors %}
+                    <li style="color:red; font-size:90%">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="form-group">
                 {{ form.managerPassword.label(class='form-control-label') }}
                 {{ form.managerPassword(class_='form-control') }}
             </div>
+
+            <br><!-- levae some space underneath the button it looks nicer-->
+
+
             <div class="form-group">
                 {{ form.submit(class_="btn btn-primary") }}
             </div>

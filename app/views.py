@@ -203,10 +203,10 @@ def confirmation_page():
     return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
 
 
-@app.route('/payment', methods=['GET', 'POST'])#the way this should work is that you get routed here after making a booking
+@app.route('/payment', methods=['GET', 'POST'])
 def payment():
     form = PaymentForm()
     if form.validate_on_submit():
         flash("Payment Succesful")
         return redirect(url_for("confirmation_page"))
-    return render_template('payment.html', title='Payment', form=form)#instead of this, the available scooter should be updated
+    return render_template('payment.html', title='Payment', form=form)
