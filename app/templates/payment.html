@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-
 {% block content %}
     <div class="container">
         <h2 class="form-register-heading">Payment Method</h2>
+        <br>
         <form class="form-register" method="POST">
             <!-- The tag below is used to prevent CSRF -->
             {{ form.hidden_tag() }}
@@ -10,14 +10,48 @@
                 {{ form.cardNum.label(class='form-control-label') }}
                 {{ form.cardNum(class_='form-control') }}
             </div>
+
+            {% if form.cardNum.errors %}
+            <ul class="errors">
+                {% for error in form.cardNum.errors %}
+                    <li style="color:red; font-size:90%">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="form-group">
                 {{ form.expiration.label(class='form-control-label') }}
                 {{ form.expiration(class_='form-control') }}
             </div>
+
+            {% if form.expiration.errors %}
+            <ul class="errors">
+                {% for error in form.expiration.errors %}
+                    <li style="color:red; font-size:90%">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="form-group">
                 {{ form.securityNum.label(class='form-control-label') }}
                 {{ form.securityNum(class_='form-control') }}
             </div>
+
+            {% if form.securityNum.errors %}
+            <ul class="errors">
+                {% for error in form.securityNum.errors %}
+                    <li style="color:red; font-size:90%">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <br>
             <div class="form-group">
                 {{ form.submit(class_="btn btn-primary") }}
             </div>

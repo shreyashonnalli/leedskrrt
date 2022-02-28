@@ -17,7 +17,7 @@
                 {{ form.password(class_='form-control') }}
             </div>
 
-            {% if form.password.errors %}
+            {% if form.password.errors %}<!-- for loop to display all errors if there are any-->
             <ul class="errors">
                 {% for error in form.password.errors %}
                     <li style="color:red; font-size:90%">
@@ -26,14 +26,22 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            <br>
+
+            <div class="form-group">
+                {{ form.managerPassword.label(class='form-control-label') }}
+                {{ form.managerPassword(class_='form-control') }}
+            </div>
+
+            <br><!-- levae some space underneath the button it looks nicer-->
+
+
             <div class="form-group">
                 {{ form.submit(class_="btn btn-primary") }}
             </div>
         </form>
         <div class="d-flex justify-content-around align-items-center">
             <p>Already have an account? <a href="{{ url_for('login') }}" id="login">Login</a></p>
-            <p>Registering as a manager? <a href="{{ url_for('registermanager')}}" id = "ManagerRegister">Register Here</a></p>
+            <p>Registering as a user? <a href="{{ url_for('register') }}" id="register">Register</a></p>
         </div>
     </div>
 {% endblock %}

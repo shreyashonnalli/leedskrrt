@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm
-from .models import Customer, Scooter, Options, Booking
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm
+from .models import Customer, Scooter, Options, Booking, Manager
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 
@@ -50,6 +50,30 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+@app.route('/registermanager', methods=['GET', 'POST'])
+def registermanager():
+    form = RegisterManagerForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        user_exists = Manager.query.filter_by(email=email).first()
+        if user_exists:
+            flash('This email has already been used', category='error')
+        elif form.managerPassword.data != "asdfghjk":
+            flash('Manager password incorrect', category='error')
+        else:
+            password = form.password.data
+
+            # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            new_manager = Manager(email=email, password=hashed_password)
+            # Adds the customer account to the database
+            db.session.add(new_manager)
+            db.session.commit()
+            flash('Successfully created account!', category='success')
+            return redirect(url_for('login'))
+    return render_template('ManagerRegister.html', title='Register', form=form)
+
 # Login view
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,22 +81,40 @@ def login():
 
     if form.validate_on_submit():
         # Searches database for the inputted email name
-        account = Customer.query.filter_by(email=form.email.data).first()
+        customerAccount = Customer.query.filter_by(email=form.email.data).first()
+        managerAccount = Manager.query.filter_by(email=form.email.data).first()
         # If the user has been found, then the following code is executed
-        if account:
+        if customerAccount:
             # Checks to see if password from database matches the inputted password
-            if bcrypt.check_password_hash(account.password, form.password.data):
+            if bcrypt.check_password_hash(customerAccount.password, form.password.data):
                 flash("Successfully logged in!", category='success')
                 # If user has ticked remember me checkbox, then a remember me cookie is created locally
                 if form.remember.data:
                     # Cookie will stay alive for 14 days, once expired the user will need to sign in again
                     # If user signs out manually or clears cookies from browser then the user will need to sign in again
-                    login_user(account, remember=True, duration=timedelta(days=14))
+                    login_user(customerAccount, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('index'))
                 else:
                     # No cookies used, instead a session with a set duration is used
-                    login_user(account, remember=False)
+                    login_user(customerAccount, remember=False)
                     return redirect(url_for('index'))
+            else:
+                # If the password is incorrect, error message is displayed
+                flash('Email or password is incorrect', category='error')
+        elif managerAccount:
+            # Checks to see if password from database matches the inputted password
+            if bcrypt.check_password_hash(managerAccount.password, form.password.data):
+                flash("Successfully logged in!", category='success')
+                # If user has ticked remember me checkbox, then a remember me cookie is created locally
+                if form.remember.data:
+                    # Cookie will stay alive for 14 days, once expired the user will need to sign in again
+                    # If user signs out manually or clears cookies from browser then the user will need to sign in again
+                    login_user(managerAccount, remember=True, duration=timedelta(days=14))
+                    return redirect(url_for('managerindex'))
+                else:
+                    # No cookies used, instead a session with a set duration is used
+                    login_user(managerAccount, remember=False)
+                    return redirect(url_for('managerindex'))
             else:
                 # If the password is incorrect, error message is displayed
                 flash('Email or password is incorrect', category='error')
@@ -98,6 +140,12 @@ def logout():
 def index():
     home={'description':'Welcome.'}
     return render_template('home.html', title='Home', home=home, account=current_user)
+
+@app.route('/managerindex')
+@login_required
+def managerindex():
+    home={'description':'Welcome.'}
+    return render_template('managerHome.html', title='Home', home=home, account=current_user)
 
 @app.route('/addscooters', methods=['GET', 'POST'])
 def addscooters():
@@ -155,10 +203,10 @@ def confirmation_page():
     return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
 
 
-@app.route('/payment', methods=['GET', 'POST'])#the way this should work is that you get routed here after making a booking
+@app.route('/payment', methods=['GET', 'POST'])
 def payment():
     form = PaymentForm()
     if form.validate_on_submit():
         flash("Payment Succesful")
         return redirect(url_for("confirmation_page"))
-    return render_template('payment.html', title='Payment', form=form)#instead of this, the available scooter should be updated
+    return render_template('payment.html', title='Payment', form=form)

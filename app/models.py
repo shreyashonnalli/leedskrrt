@@ -8,6 +8,11 @@ class Customer(db.Model, UserMixin):
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
 
+class Manager(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, unique=True)
+    password = db.Column(db.String)
+
 class Scooter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.String)
