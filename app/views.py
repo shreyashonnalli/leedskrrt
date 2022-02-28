@@ -51,7 +51,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/registermanager', methods=['GET', 'POST'])
-def register():
+def registermanager():
     form = RegisterManagerForm()
 
     if form.validate_on_submit():
@@ -59,7 +59,7 @@ def register():
         user_exists = Manager.query.filter_by(email=email).first()
         if user_exists:
             flash('This email has already been used', category='error')
-        elif form.managerPassword.data != "skrrtiscool123":
+        elif form.managerPassword.data != "asdfghjk":
             flash('Manager password incorrect', category='error')
         else:
             password = form.password.data
@@ -81,22 +81,40 @@ def login():
 
     if form.validate_on_submit():
         # Searches database for the inputted email name
-        account = Customer.query.filter_by(email=form.email.data).first()
+        customerAccount = Customer.query.filter_by(email=form.email.data).first()
+        managerAccount = Manager.query.filter_by(email=form.email.data).first()
         # If the user has been found, then the following code is executed
-        if account:
+        if customerAccount:
             # Checks to see if password from database matches the inputted password
-            if bcrypt.check_password_hash(account.password, form.password.data):
+            if bcrypt.check_password_hash(customerAccount.password, form.password.data):
                 flash("Successfully logged in!", category='success')
                 # If user has ticked remember me checkbox, then a remember me cookie is created locally
                 if form.remember.data:
                     # Cookie will stay alive for 14 days, once expired the user will need to sign in again
                     # If user signs out manually or clears cookies from browser then the user will need to sign in again
-                    login_user(account, remember=True, duration=timedelta(days=14))
+                    login_user(customerAccount, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('index'))
                 else:
                     # No cookies used, instead a session with a set duration is used
-                    login_user(account, remember=False)
+                    login_user(customerAccount, remember=False)
                     return redirect(url_for('index'))
+            else:
+                # If the password is incorrect, error message is displayed
+                flash('Email or password is incorrect', category='error')
+        elif managerAccount:
+            # Checks to see if password from database matches the inputted password
+            if bcrypt.check_password_hash(managerAccount.password, form.password.data):
+                flash("Successfully logged in!", category='success')
+                # If user has ticked remember me checkbox, then a remember me cookie is created locally
+                if form.remember.data:
+                    # Cookie will stay alive for 14 days, once expired the user will need to sign in again
+                    # If user signs out manually or clears cookies from browser then the user will need to sign in again
+                    login_user(managerAccount, remember=True, duration=timedelta(days=14))
+                    return redirect(url_for('managerindex'))
+                else:
+                    # No cookies used, instead a session with a set duration is used
+                    login_user(managerAccount, remember=False)
+                    return redirect(url_for('managerindex'))
             else:
                 # If the password is incorrect, error message is displayed
                 flash('Email or password is incorrect', category='error')
@@ -122,6 +140,12 @@ def logout():
 def index():
     home={'description':'Welcome.'}
     return render_template('home.html', title='Home', home=home, account=current_user)
+
+@app.route('/managerindex')
+@login_required
+def managerindex():
+    home={'description':'Welcome.'}
+    return render_template('managerHome.html', title='Home', home=home, account=current_user)
 
 @app.route('/addscooters', methods=['GET', 'POST'])
 def addscooters():
