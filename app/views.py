@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm
-from .models import Customer, Scooter, Options, Booking
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm
+from .models import Customer, Scooter, Options, Booking, Manager
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 
@@ -49,6 +49,30 @@ def register():
             flash('Successfully created account!', category='success')
             return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/registermanager', methods=['GET', 'POST'])
+def register():
+    form = RegisterManagerForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        user_exists = Manager.query.filter_by(email=email).first()
+        if user_exists:
+            flash('This email has already been used', category='error')
+        elif form.managerPassword.data != "skrrtiscool123":
+            flash('Manager password incorrect', category='error')
+        else:
+            password = form.password.data
+
+            # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            new_manager = Manager(email=email, password=hashed_password)
+            # Adds the customer account to the database
+            db.session.add(new_manager)
+            db.session.commit()
+            flash('Successfully created account!', category='success')
+            return redirect(url_for('login'))
+    return render_template('ManagerRegister.html', title='Register', form=form)
 
 # Login view
 @app.route('/login', methods=['GET', 'POST'])

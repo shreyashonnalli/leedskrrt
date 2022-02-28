@@ -3,9 +3,16 @@ from wtforms import StringField, IntegerField, BooleanField, EmailField, Passwor
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 from flask import flash
+
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8)])
+    submit = SubmitField('Register')
+
+class RegisterManagerForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8)])
+    managerPassword = PasswordField('Managerpassword', validators=[DataRequired(), validators.length(min=8)])
     submit = SubmitField('Register')
 
 class LoginForm(FlaskForm):
@@ -35,7 +42,7 @@ class PaymentForm(FlaskForm):
         if (not field.data.isdigit()):
             flash("Card number must be a number")
             raise ValidationError()
-    
+
     #custom validator for expiration date
     def validate_expiration(form, field):
         if (not field.data.isdigit()):
@@ -47,4 +54,3 @@ class PaymentForm(FlaskForm):
         if (not field.data.isdigit()):
             flash("Security number must be a number")
             raise ValidationError()
-
