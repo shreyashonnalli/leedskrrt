@@ -1,33 +1,59 @@
 {% extends "base2.html" %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="form-register-heading">Login</h2>
-        <form class="form-register" method="POST">
-            <!-- The tag below is used to prevent CSRF -->
-            {{ form.hidden_tag() }}
+<section class="vh-100">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6 text-light bg-dark">
+
+        <div class="p-5 ms-xl-4">
+          <span class="h1 fw-bold mb-0-5">Company Name</span>
+        </div>
+
+        <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
+
+          <form class= "form-register" method = "POST" style="width: 23rem;">
+            <!-- The tag below is use to prevent CSRF -->
+			      {{ form.hidden_tag() }}
+
+            <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Log in</h3>
+
             <div class="form-group">
-                {{ form.email.label(class='form-control-label') }}
-                {{ form.email(class_='form-control') }}
+              {{ form.email.label(class='form-control-label') }}
+              {{ form.email(class_='form-control') }}
             </div>
+
+            <br>
+
             <div class="form-group">
-                {{ form.password.label(class='form-control-label') }}
-                {{ form.password(class_='form-control') }}
+              {{ form.password.label(class='form-control-label') }}
+              {{ form.password(class_='form-control') }}
             </div>
+
             <div class="form-group">
                 <!-- Remember me checkbox -->
                 {{ form.remember.label }}
                 {{ form.remember() }}
             </div>
+
+            <br>
+
             <div class="form-group">
-                {{ form.submit(class_="btn btn-primary") }}
+              {{ form.submit(class_="btn btn-primary", style="width:100%") }}
             </div>
-        </form>
-        <div class="d-flex justify-content-around align-items-center">
-            <p>Don't have an account? <a href="{{ url_for('register') }}" id="register">Register</a></p>
+
+            <p class="small mb-5 pb-lg-2"><a class="text-light" href="#!">Forgot password?</a></p>
+            <p>Don't have an account? <a href="{{ url_for('register') }}"  id="register" class="link-info">Register here</a></p>
+
+          </form>
+
         </div>
-        <div class="d-flex justify-content-around align-items-center">
-            <p>Book as unregistered user? <a href="{{ url_for('index') }}" id="index">Book</a></p>
-        </div>
+
+      </div>
+      <div class="col-sm-6 px-0 d-none d-sm-block">
+        <img src="https://companylogo" class="w-100 vh-100" style="object-fit: cover; object-position: left;">
+      </div>
     </div>
+  </div>
+</section>
 {% endblock %}

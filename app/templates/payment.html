@@ -1,60 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container">
-        <h2 class="form-register-heading">Payment Method</h2>
+        <h1 class="form-register-heading">Payment Information</h1>
         <br>
-        <form class="form-register" method="POST">
-            <!-- The tag below is used to prevent CSRF -->
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.cardNum.label(class='form-control-label') }}
-                {{ form.cardNum(class_='form-control') }}
-            </div>
+        <section class="bg-light text-dark p-3" >
+          <form class="form-register" method="POST">
+              <!-- The tag below is used to prevent CSRF -->
+              {{ form.hidden_tag() }}
+              <div class="form-group px5 py2">
+                  <h5> {{ form.cardNum.label(class='form-control-label') }} </h5>
+                  <h5>{{ form.cardNum(class_='form-control') }} </h5>
+              </div>
 
-            {% if form.cardNum.errors %}
-            <ul class="errors">
-                {% for error in form.cardNum.errors %}
-                    <li style="color:red; font-size:90%">
-                        {{ error }}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+              {% if form.cardNum.errors %}
+              <ul class="errors">
+                  {% for error in form.cardNum.errors %}
+                      <li style="color:red; font-size:90%">
+                          {{ error }}
+                      </li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
 
-            <div class="form-group">
-                {{ form.expiration.label(class='form-control-label') }}
-                {{ form.expiration(class_='form-control') }}
-            </div>
+              <div class="form-group">
+                  <h5>{{ form.expiration.label(class='form-control-label') }}</h5>
+                  <h5>{{ form.expiration(class_='form-control') }}</h5>
+              </div>
 
-            {% if form.expiration.errors %}
-            <ul class="errors">
-                {% for error in form.expiration.errors %}
-                    <li style="color:red; font-size:90%">
-                        {{ error }}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+              {% if form.expiration.errors %}
+              <ul class="errors">
+                  {% for error in form.expiration.errors %}
+                      <li style="color:red; font-size:90%">
+                          {{ error }}
+                      </li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
 
-            <div class="form-group">
-                {{ form.securityNum.label(class='form-control-label') }}
-                {{ form.securityNum(class_='form-control') }}
-            </div>
+              <div class="form-group">
+                  <h5>{{ form.securityNum.label(class='form-control-label') }}</h5>
+                  <h5>{{ form.securityNum(class_='form-control') }}</h5>
+              </div>
 
-            {% if form.securityNum.errors %}
-            <ul class="errors">
-                {% for error in form.securityNum.errors %}
-                    <li style="color:red; font-size:90%">
-                        {{ error }}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+              {% if form.securityNum.errors %}
+              <ul class="errors">
+                  {% for error in form.securityNum.errors %}
+                      <li style="color:red; font-size:90%">
+                          {{ error }}
+                      </li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
 
-            <br>
-            <div class="form-group">
-                {{ form.submit(class_="btn btn-primary") }}
-            </div>
-        </form>
+              <div class="form-group">
+                  {{ form.submit(class_="btn btn-primary", style="width:100%") }}
+              </div>
+          </form>
+        </section>
     </div>
 {% endblock %}

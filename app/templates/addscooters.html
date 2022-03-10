@@ -4,8 +4,8 @@
 <h1>Add Scooters</h1>
 <form action="" method="post" name="Add Scooters">
     {{ form.hidden_tag() }}
-
-    <h6><b>Location</b></h6>
+<br>
+    <h5><b>Location</b></h5>
     {{ form.location(class_='form-control') }}
     {% for error in form.location.errors %}
      <div class="alert alert-danger w-100" role="alert">
