@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Add Payment Details</h1>
+<form action="" method="post" name="Add Payment Details">
+    {{ form.hidden_tag() }}
+
+    <h6><b>Card Number</b></h6>
+    {{ form.cardNum.label(class='form-control-label') }}
+    {{ form.cardNum(class_='form-control') }}
+    {% if form.cardNum.errors %}
+    <ul class="errors">
+        {% for error in form.cardNum.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h6><b>Expiry Date</b></h6>
+    {{ form.expiryDate.label(class='form-control-label') }}
+    {{ form.expiryDate(class_='form-control') }}
+    {% if form.expiryDate.errors %}
+    <ul class="errors">
+        {% for error in form.expiryDate.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h6><b>Name on Card</b></h6>
+    {{ form.cardName.label(class='form-control-label') }}
+    {{ form.cardName(class_='form-control') }}
+    {% if form.cardName.errors %}
+    <ul class="errors">
+        {% for error in form.cardName.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="form-group">
+        {{ form.submit(class_="btn btn-primary") }}
+    </div>
+</form>
+
+{% endblock %}

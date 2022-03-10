@@ -65,7 +65,11 @@ class OptionsForm(FlaskForm):
     hours = IntegerField('hours', validators=[DataRequired()])
     price = IntegerField('price', validators=[DataRequired()])
 
-
+class AddPaymentMethodForm(FlaskForm):
+    cardNum = StringField('Card Number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
+    expiryDate = StringField('expiryDate', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
+    cardName = StringField('cardName', validators=[DataRequired()])
+    submit = SubmitField('AddPaymentDetail')
 
 class PaymentForm(FlaskForm):
     cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
