@@ -4,7 +4,15 @@ from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentFor
 from .models import Customer, Scooter, Options, Booking, Manager, PaymentCard
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
+from flask_mail import Mail, Message
 
+app.config['MAIL_SERVER']='smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = '95ebe879afef61'
+app.config['MAIL_PASSWORD'] = '3ad9d8c3d9cfba'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
 
 # Login manager is used to perform tasks like logging users in and out
 login_manager = LoginManager(app)
@@ -136,7 +144,6 @@ def logout():
 # Home view
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
     home={'description':'Welcome.'}
     return render_template('home.html', title='Home', home=home, account=current_user)
@@ -200,6 +207,10 @@ def book_scooter(scooter_id, option_id):
 def confirmation_page():
     customerId = current_user.get_id()
     booking = Booking.query.filter_by(customerId=customerId).order_by(Booking.bookingId.desc()).first()
+    nemail = Customer.query.get(customerId)
+    msg = Message('Booking Confirmation', sender =   'raja@mailtrap.io', recipients = [nemail.email])
+    msg.body = 'Hello ' + str(nemail.email) + '\nBooking ID: '  + str(booking.bookingId) + '\nCustomer ID: ' + str(booking.customerId) + '\nScooter ID: ' + str(booking.scooterId) + '\nPrice: ' + str(booking.price) + '\nHourse: ' + str(booking.hours)
+    mail.send(msg)
     return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
 
 @app.route('/payment', methods=['GET', 'POST'])
