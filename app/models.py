@@ -29,3 +29,9 @@ class Booking(db.Model):
     scooterId = db.Column(db.Integer)
     price = db.Column(db.Integer)
     hours = db.Column(db.Integer)
+
+class PaymentCard(db.Model):
+    digit16 = db.Column(db.Integer, primary_key=True)
+    CustomerId = db.Column(db.Integer)
+    ExpiryDate = db.Column(db.Integer)
+    CardName = db.Column(db.String)

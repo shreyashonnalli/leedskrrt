@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm
-from .models import Customer, Scooter, Options, Booking, Manager
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm, AddPaymentMethodForm
+from .models import Customer, Scooter, Options, Booking, Manager, PaymentCard
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 
@@ -202,7 +202,6 @@ def confirmation_page():
     booking = Booking.query.filter_by(customerId=customerId).order_by(Booking.bookingId.desc()).first()
     return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
 
-
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     form = PaymentForm()
@@ -210,3 +209,16 @@ def payment():
         flash("Payment Succesful")
         return redirect(url_for("confirmation_page"))
     return render_template('payment.html', title='Payment', form=form)
+
+@app.route('/add_payment_details', methods=['GET','POST'])
+def add_payment_details():
+    form = AddPaymentMethodForm()
+    if form.validate_on_submit():
+        ncardNumber=request.form.get("cardNum")
+        nexpiryDate=request.form.get("expiryDate")
+        ncardName=request.form.get("cardName")
+        new_card=PaymentCard(digit16 = ncardNumber, ExpiryDate = nexpiryDate, CardName = ncardName, CustomerId = current_user.get_id())
+        db.session.add(new_card)
+        db.session.commit()
+        flash("Payment Method Added")
+    return render_template('addPayment.html', title = 'Add Payment Detail', form=form)
