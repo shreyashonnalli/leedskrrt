@@ -232,6 +232,7 @@ def add_payment_details():
         db.session.add(new_card)
         db.session.commit()
         flash("Payment Method Added")
+        return redirect(url_for("index"))
     return render_template('addPayment.html', title = 'Add Payment Detail', form=form)
 
 @app.route('/send_feedback_form', methods=['GET','POST'])
@@ -244,4 +245,5 @@ def feedback_form():
         db.session.add(new_feedback_form)
         db.session.commit()
         flash("Feedback Form Sent")
+        return redirect(url_for("index"))
     return render_template('FeedbackForm.html', title = 'Send Scooter Feedback', form=form)
