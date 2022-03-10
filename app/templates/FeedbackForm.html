@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Send Scooter Feedback</h1>
+<form action="" method="post" name="Send scooter Feedback">
+    {{ form.hidden_tag() }}
+
+    <h6><b>ScooterId</b></h6>
+    {{ form.scooterId.label(class='form-control-label') }}
+    {{ form.scooterId(class_='form-control') }}
+    {% if form.scooterId.errors %}
+    <ul class="errors">
+        {% for error in form.scooterId.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h6><b>Feedback</b></h6>
+    {{ form.feedback.label(class='form-control-label') }}
+    {{ form.feedback(class_='form-control') }}
+    {% if form.feedback.errors %}
+    <ul class="errors">
+        {% for error in form.feedback.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="form-group">
+        {{ form.submit(class_="btn btn-primary") }}
+    </div>
+</form>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm, AddPaymentMethodForm
-from .models import Customer, Scooter, Options, Booking, Manager, PaymentCard
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm, AddPaymentMethodForm, FeedbackForm
+from .models import Customer, Scooter, Options, Booking, Manager, PaymentCard, FeedbackCard
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 from flask_mail import Mail, Message
@@ -232,4 +232,18 @@ def add_payment_details():
         db.session.add(new_card)
         db.session.commit()
         flash("Payment Method Added")
+        return redirect(url_for("index"))
     return render_template('addPayment.html', title = 'Add Payment Detail', form=form)
+
+@app.route('/send_feedback_form', methods=['GET','POST'])
+def feedback_form():
+    form=FeedbackForm()
+    if form.validate_on_submit():
+        nScooterId=request.form.get("scooterId")
+        nfeedback = request.form.get("feedback")
+        new_feedback_form=FeedbackCard(scooterId=nScooterId, feedback=nfeedback)
+        db.session.add(new_feedback_form)
+        db.session.commit()
+        flash("Feedback Form Sent")
+        return redirect(url_for("index"))
+    return render_template('FeedbackForm.html', title = 'Send Scooter Feedback', form=form)

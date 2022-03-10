@@ -69,10 +69,15 @@ class AddPaymentMethodForm(FlaskForm):
     cardNum = StringField('Card Number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
     expiryDate = StringField('expiryDate', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
     cardName = StringField('cardName', validators=[DataRequired()])
-    submit = SubmitField('AddPaymentDetail')
+    submit = SubmitField('Add Payment Detail')
 
 class PaymentForm(FlaskForm):
     cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
     expiration = StringField('Expiration date', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
     securityNum = PasswordField('Security code', validators=[DataRequired(), validators.length(min=3, max=3), checkForNum])
     submit = SubmitField('Purchase')
+
+class FeedbackForm(FlaskForm):
+    scooterId = StringField('ScooterId', validators=[DataRequired()])
+    feedback = StringField('feedback', validators=[DataRequired()])
+    submit = SubmitField('Send Feedback')
