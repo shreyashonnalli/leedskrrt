@@ -35,3 +35,8 @@ class PaymentCard(db.Model):
     CustomerId = db.Column(db.Integer)
     ExpiryDate = db.Column(db.Integer)
     CardName = db.Column(db.String)
+
+class FeedbackCard(db.Model):
+    feedbackId=db.Column(db.Integer, primary_key=True)
+    scooterId =db.Column(db.Integer)
+    feedback=db.Column(db.String)
