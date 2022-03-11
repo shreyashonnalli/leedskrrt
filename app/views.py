@@ -4,6 +4,7 @@ from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentFor
 from .models import Customer, Scooter, Options, Booking, Manager, PaymentCard, FeedbackCard
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
+import datetime as dt
 from flask_mail import Mail, Message
 
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
@@ -193,11 +194,15 @@ def mark_task(scooter_id):
 
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
 def book_scooter(scooter_id, option_id):
+    #get current date
+    cDate = dt.date.today()
+    strDate = cDate.strftime("%D")#convert into string
+
     scooter = Scooter.query.get(scooter_id)
     scooter.availability = False
     bookingOption = Options.query.get(option_id)
     userId = current_user.get_id()
-    newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours)
+    newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate)
     db.session.add(newBooking)
     db.session.commit()
     flash("Scooter booked")
@@ -247,3 +252,35 @@ def feedback_form():
         flash("Feedback Form Sent")
         return redirect(url_for("index"))
     return render_template('FeedbackForm.html', title = 'Send Scooter Feedback', form=form)
+
+@app.route('/revenue', methods=['GET', 'POST'])
+def revenue_page():
+
+    #variable prep
+    bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
+    inBooking = bookingFirst.bookingId
+
+    cDate = dt.date.today()#current date
+    strDate = cDate.strftime("%D")#convert into string
+    temp = strDate.split("/")#split the date into a list of month, date, year
+    int1 = int(temp[1])
+
+    foundDate = False
+    count = 0
+    totalPrice = 0
+
+    while not foundDate:
+        if inBooking - count > 0:
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()
+            temp2 = tempBooking.date#format date until we only have an int of the days
+            strTemp = temp2.split("/")
+            int2 = int(strTemp[1])
+            if (int1 - int2 > 7):#longer than a week ago we dont care about it anymore
+                foundDate = True
+            else:
+                totalPrice += tempBooking.price
+        else:
+            foundDate = True
+        count += 1
+
+    return render_template('revenue.html', title='revenue', totalPrice = totalPrice)
