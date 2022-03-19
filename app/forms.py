@@ -44,6 +44,8 @@ def checkForPassNumber(form, field):
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8), checkForSpecialChar, checkForPassNumber])
+    student = BooleanField('Are you a student?')
+    seniorCitizen = BooleanField('Are you a senior citizen?')
     submit = SubmitField('Register')
 
 class RegisterManagerForm(FlaskForm):

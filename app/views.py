@@ -53,10 +53,14 @@ def register():
             # This will be used to restrict customer from accessing manager views
             role = 1
             password = form.password.data
-
+            student = form.student.data
+            seniorCitizen = form.seniorCitizen.data
+            if student == True and seniorCitizen == True:
+                flash('Cant apply for student discount and senior citizen discount', category='error')
+                return redirect(url_for('register'))
             # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_customer = Account(email=email, password=hashed_password, role=role)
+            new_customer = Account(email=email, password=hashed_password, role=role,student=student,seniorCitizen=seniorCitizen)
             # Adds the customer account to the database
             db.session.add(new_customer)
             db.session.commit()
@@ -84,7 +88,7 @@ def registermanager():
 
             # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_manager = Account(email=email, password=hashed_password, role=role)
+            new_manager = Account(email=email, password=hashed_password, role=role,student=False,seniorCitizen=False)
             # Adds the customer account to the database
             db.session.add(new_manager)
             db.session.commit()

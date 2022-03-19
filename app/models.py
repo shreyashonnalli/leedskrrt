@@ -8,7 +8,8 @@ class Account(db.Model, UserMixin):
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
     role = db.Column(db.Integer, primary_key=False)
-
+    student = db.Column(db.Boolean)
+    seniorCitizen = db.Column(db.Boolean)
 
 class Scooter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
