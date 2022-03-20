@@ -6,6 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from datetime import timedelta, datetime
 import datetime as dt
 from flask_mail import Mail, Message
+import math
 
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
@@ -53,10 +54,14 @@ def register():
             # This will be used to restrict customer from accessing manager views
             role = 1
             password = form.password.data
-
+            student = form.student.data
+            seniorCitizen = form.seniorCitizen.data
+            if student == True and seniorCitizen == True:
+                flash('Cant apply for student discount and senior citizen discount', category='error')
+                return redirect(url_for('register'))
             # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_customer = Account(email=email, password=hashed_password, role=role)
+            new_customer = Account(email=email, password=hashed_password, role=role,student=student,seniorCitizen=seniorCitizen)
             # Adds the customer account to the database
             db.session.add(new_customer)
             db.session.commit()
@@ -84,7 +89,7 @@ def registermanager():
 
             # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_manager = Account(email=email, password=hashed_password, role=role)
+            new_manager = Account(email=email, password=hashed_password, role=role,student=False,seniorCitizen=False)
             # Adds the customer account to the database
             db.session.add(new_manager)
             db.session.commit()
@@ -217,10 +222,35 @@ def viewscooters():
 def mark_task(scooter_id):
     if current_user.role == 1:
         options = Options.query.all()
+        weeklyScooterTime = weekly_usage_calculator()
+        #should the discount be applied?
+        if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
+            flash('Frequent user Discount applied!',category='success')
+            for option in options:
+                option.price = math.ceil(option.price * 0.8)
+
         return render_template('options.html', title='Options', options=options, id=scooter_id)
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
+
+
+def weekly_usage_calculator():
+    hourCounter = 0
+    #get all bookings
+    bookings = Booking.query.all()
+    #get todays date
+    today = dt.date.today()
+    for booking in bookings:
+        #Create a date object from string in database
+        bookingDateObject = dt.datetime.strptime(booking.date, "%m/%d/%y").date()
+        #floor division to calculate difference in weeks
+        weekDifference = (today-bookingDateObject).days//7
+        #if this user has a booking in the most recent week then add to counter
+        if booking.customerId == current_user.id and weekDifference == 0:
+            hourCounter = hourCounter + booking.hours
+    return hourCounter
+
 
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
 def book_scooter(scooter_id, option_id):
@@ -232,6 +262,12 @@ def book_scooter(scooter_id, option_id):
         scooter = Scooter.query.get(scooter_id)
         scooter.availability = False
         bookingOption = Options.query.get(option_id)
+
+        #apply discount for student and senior citizen
+        weeklyScooterTime = weekly_usage_calculator()
+        if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
+            bookingOption.price = math.ceil(bookingOption.price * 0.8)
+
         userId = current_user.get_id()
         newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate)
         db.session.add(newBooking)
