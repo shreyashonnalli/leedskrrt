@@ -6,6 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user, L
 from datetime import timedelta, datetime
 import datetime as dt
 from flask_mail import Mail, Message
+import math
 
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
@@ -221,6 +222,13 @@ def viewscooters():
 def mark_task(scooter_id):
     if current_user.role == 1:
         options = Options.query.all()
+
+        #should the discount be applied?
+        if current_user.student == True or current_user.seniorCitizen == True:
+            flash('Discount applied!',category='success')
+            for option in options:
+                option.price = math.ceil(option.price * 0.8)
+
         return render_template('options.html', title='Options', options=options, id=scooter_id)
     else:
         flash('Our services are available to our customers only', category='error')
@@ -236,6 +244,11 @@ def book_scooter(scooter_id, option_id):
         scooter = Scooter.query.get(scooter_id)
         scooter.availability = False
         bookingOption = Options.query.get(option_id)
+
+        #apply discount for student and senior citizen
+        if current_user.student == True or current_user.seniorCitizen == True:
+            bookingOption.price = math.ceil(bookingOption.price * 0.8)
+
         userId = current_user.get_id()
         newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate)
         db.session.add(newBooking)
