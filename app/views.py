@@ -1,7 +1,7 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from app import app, db, bcrypt
-from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm, AddPaymentMethodForm, FeedbackForm
-from .models import Account, Scooter, Options, Booking, PaymentCard, FeedbackCard
+from .forms import RegisterForm, LoginForm, ScooterForm, OptionsForm, PaymentForm, RegisterManagerForm, AddPaymentMethodForm, FeedbackForm, UnregisteredPaymentForm
+from .models import Account, Scooter, Options, Booking, PaymentCard, FeedbackCard, UnregisteredBooking
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from datetime import timedelta, datetime
 import datetime as dt
@@ -335,3 +335,47 @@ def revenue_page():
         count += 1
 
     return render_template('revenue.html', title='revenue', totalPrice = totalPrice)
+
+@app.route('/unregistered_booking', methods=['GET', 'POST'])
+def unregistered_booking():
+        scooters = Scooter.query.all()
+        return render_template('unregisteredBooking.html', title='Scooters', scooters=scooters)
+
+@app.route('/unregistered_book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
+def unregistered_view_options(scooter_id):
+        options = Options.query.all()
+        return render_template('unregisteredOptions.html', title='Options', options=options, id=scooter_id)
+
+@app.route('/unregistered_book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
+def unregistered_book_scooter(scooter_id, option_id):
+        #get current date
+        cDate = dt.date.today()
+        strDate = cDate.strftime("%D")#convert into string
+        scooter = Scooter.query.get(scooter_id)
+        scooter.availability = False
+        bookingOption = Options.query.get(option_id)
+        newBooking = UnregisteredBooking(scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate)
+        db.session.add(newBooking)
+        db.session.commit()
+        flash("Scooter booked")
+        return redirect(url_for("unregistered_payment"))
+
+@app.route('/unregistered_book_scooter/unregistered_confirmation_page', methods=['GET', 'POST'])
+def unregistered_confirmation_page():
+        booking = UnregisteredBooking.query.order_by(UnregisteredBooking.bookingId.desc()).first()
+        nemail = booking.email
+        msg = Message('Booking Confirmation', sender =   'raja@mailtrap.io', recipients = [nemail])
+        msg.body = 'Hello ' + str(nemail) + '\nBooking ID: '  + str(booking.bookingId) + '\nScooter ID: ' + str(booking.scooterId) + '\nPrice: ' + str(booking.price) + '\nHours: ' + str(booking.hours)
+        mail.send(msg)
+        return render_template('unregisteredConfirmation.html', title='Confirmation', booking = booking)
+
+@app.route('/unregisteredpayment', methods=['GET', 'POST'])
+def unregistered_payment():
+        form = UnregisteredPaymentForm()
+        if form.validate_on_submit():
+            flash("Payment Succesful")
+            booking = UnregisteredBooking.query.order_by(UnregisteredBooking.bookingId.desc()).first()
+            booking.email = form.email.data
+            db.session.commit()
+            return redirect(url_for("unregistered_confirmation_page"))
+        return render_template('unregisteredPayment.html', title='Payment', form=form)

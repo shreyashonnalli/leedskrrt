@@ -81,3 +81,10 @@ class FeedbackForm(FlaskForm):
     scooterId = StringField('ScooterId', validators=[DataRequired()])
     feedback = StringField('feedback', validators=[DataRequired()])
     submit = SubmitField('Send Feedback')
+
+class UnregisteredPaymentForm(FlaskForm):
+    cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
+    expiration = StringField('Expiration date', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
+    securityNum = PasswordField('Security code', validators=[DataRequired(), validators.length(min=3, max=3), checkForNum])
+    email = EmailField('Email', validators=[DataRequired()])
+    submit = SubmitField('Purchase')
