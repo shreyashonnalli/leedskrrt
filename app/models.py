@@ -30,7 +30,8 @@ class Booking(db.Model):
     price = db.Column(db.Integer)
     hours = db.Column(db.Integer)
     date = db.Column(db.String)
-
+    datetime = db.Column(db.DateTime)
+    
 class PaymentCard(db.Model):
     digit16 = db.Column(db.Integer, primary_key=True)
     CustomerId = db.Column(db.Integer)

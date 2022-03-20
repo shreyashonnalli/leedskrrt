@@ -213,6 +213,19 @@ def addoptions():
 
 @app.route('/viewscooters', methods=['GET', 'POST'])
 def viewscooters():
+    booking = Booking.query.all()
+    nscooters = Scooter.query.order_by(Scooter.id.desc()).first()
+    cDateTime = dt.datetime.now()
+    if nscooters is not None:
+        numScooters = nscooters.id
+        for i in range(1, numScooters):
+            bookingFirst = Booking.query.filter_by(scooterId= i).order_by(Booking.bookingId.desc()).first()
+            if bookingFirst is None:
+                continue
+            if (((cDateTime - bookingFirst.datetime).total_seconds())) > bookingFirst.hours:
+                 scooter = Scooter.query.filter_by(id = i).first()
+                 scooter.availability = True
+                 db.session.commit()
     scooters = Scooter.query.all()
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 
@@ -269,7 +282,8 @@ def book_scooter(scooter_id, option_id):
             bookingOption.price = math.ceil(bookingOption.price * 0.8)
 
         userId = current_user.get_id()
-        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate)
+        cDateTime = dt.datetime.now()
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate, datetime = cDateTime)
         db.session.add(newBooking)
         db.session.commit()
         flash("Scooter booked")
