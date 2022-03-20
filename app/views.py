@@ -344,7 +344,8 @@ def feedback_form():
         if form.validate_on_submit():
             nScooterId = request.form.get("scooterId")
             nfeedback = request.form.get("feedback")
-            new_feedback_form = FeedbackCard(scooterId=nScooterId, feedback=nfeedback)
+            nPriority = request.form.get("feedbackPriority")
+            new_feedback_form = FeedbackCard(scooterId=nScooterId, feedback=nfeedback, feedbackPriority=nPriority)
             db.session.add(new_feedback_form)
             db.session.commit()
             flash("Feedback Form Sent")
