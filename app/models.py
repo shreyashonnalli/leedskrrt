@@ -46,7 +46,7 @@ class FeedbackCard(db.Model):
 class UnregisteredBooking(db.Model):
     bookingId = db.Column(db.Integer, primary_key=True)
     scooterId = db.Column(db.Integer)
-    email = db.Column(db.String, unique=True)
+    email = db.Column(db.String)
     price = db.Column(db.Integer)
     hours = db.Column(db.Integer)
     date = db.Column(db.String)
