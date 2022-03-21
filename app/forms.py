@@ -5,13 +5,16 @@ from wtforms.validators import ValidationError
 from flask import flash
 
 
-
 #start of our custom validators
 
 #custom validator, which checks the input string to see if it is an integer
 def checkForNum(form, field):
     if (not field.data.isdigit()):
         raise ValidationError('Must be a number')
+
+def checkForZero(form, field):
+    if (field.data < 1 or field.data > 9):
+        raise ValidationError('Must be from 1-9')
 
 #custom validator, which checks that the string contains at least one special character
 def checkForSpecialChar(form, field):
@@ -38,8 +41,6 @@ def checkForPassNumber(form, field):
         raise ValidationError('Must contain at least one number')
 
 #end of our custom validators
-
-
 
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
@@ -82,7 +83,9 @@ class PaymentForm(FlaskForm):
 class FeedbackForm(FlaskForm):
     scooterId = StringField('ScooterId', validators=[DataRequired()])
     feedback = StringField('feedback', validators=[DataRequired()])
+    feedbackPriority = IntegerField('feedbackPriority', validators=[DataRequired(), checkForZero])
     submit = SubmitField('Send Feedback')
+
 
 class UnregisteredPaymentForm(FlaskForm):
     cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])

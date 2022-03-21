@@ -31,6 +31,21 @@
     </ul>
     {% endif %}
 
+    <h6><b>Feedback Priority (On a scale of 1(low) to high(9))</b></h6>
+    {{ form.feedbackPriority.label(class='form-control-label') }}
+    {{ form.feedbackPriority(class_='form-control') }}
+    {% if form.feedbackPriority.errors %}
+    <ul class="errors">
+        {% for error in form.feedbackPriority.errors %}
+            <li style="color:red; font-size:90%">
+                {{ error }}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+
     <div class="form-group">
         {{ form.submit(class_="btn btn-primary") }}
     </div>
