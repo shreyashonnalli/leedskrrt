@@ -230,6 +230,24 @@ def viewscooters():
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 
 
+@app.route('/view_feedback', methods=['GET', 'POST'])
+def view_feedback():
+    if current_user.role == 2:
+        feedbackCards = FeedbackCard.query.order_by(FeedbackCard.feedbackPriority.desc()).all()
+        return render_template('viewfeedback.html', title='Feedback', feedbackCards=feedbackCards)
+    else:
+        flash('This page is accessed by managers only', category='error')
+        return redirect(url_for('index'))
+
+
+@app.route('/view_feedback/resolve_feedback/<int:feedbackId>', methods=['GET', 'POST'])
+def resolve_feedback(feedbackId):
+    print(feedbackId)
+    FeedbackCard.query.filter_by(feedbackId = feedbackId).delete()
+    db.session.commit()
+    flash('Issue removed from database!', category='success')
+    return redirect(url_for('view_feedback'))
+
 
 @app.route('/book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
 def mark_task(scooter_id):
@@ -238,7 +256,7 @@ def mark_task(scooter_id):
         weeklyScooterTime = weekly_usage_calculator()
         #should the discount be applied?
         if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
-            flash('Frequent user Discount applied!',category='success')
+            flash('Discount applied!',category='success')
             for option in options:
                 option.price = math.ceil(option.price * 0.8)
 
@@ -412,7 +430,7 @@ def revenue_page():
     month = todaysMonth(todaysDate())#the current month
     today = todaysDay(todaysDate())#the current day
     testBooking = Booking.query.order_by(Booking.bookingId.desc()).first()#this will only wbe used to check if the database is empty
-    
+
 
     if (testBooking != None):#our database is not empty
         dayPrice = calculateRevenue(1)
@@ -429,9 +447,9 @@ def revenue_page():
 
         weekPrice = 0
         dayPrice = 0
-    
-    return render_template('revenue.html', title='revenue', weekPrice = weekPrice, 
-    dayPrice = dayPrice, weekPrices = weekPrices, month = month, weekPriceLen = weekPriceLen, 
+
+    return render_template('revenue.html', title='revenue', weekPrice = weekPrice,
+    dayPrice = dayPrice, weekPrices = weekPrices, month = month, weekPriceLen = weekPriceLen,
     weekDates = weekDates, popularDay = popularDay, percentages = percentages, percentagesLen = percentagesLen)
 
 
@@ -453,7 +471,7 @@ def calculateRevenue(days):#a revenue calculating method based around the number
 
     while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
         if inBooking - count > 0:# we have reached the end of the database
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
             temp2 = tempBooking.date#format date until we only have an int of the days
             strTemp = temp2.split("/")#some formatting
             searchDate = int(strTemp[1])
@@ -481,14 +499,14 @@ def calculateDailyRevenue(days):#this method calculates the revenue of a specifi
 
     while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
         if inBooking - count > 0:# we have reached the end of the database
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
             temp2 = tempBooking.date#format date until we only have an int of the days
             strTemp = temp2.split("/")#some formatting
             searchDate = int(strTemp[1])
             searchMonth = int(strTemp[0])
             if (today - searchDate == days):#if it is the targeted date
                 totalPrice += tempBooking.price
-                
+
             if (today - searchDate > days or (thisMonth - searchMonth != 0)):#longer than a week ago we dont care about it anymore
                 foundDate = True#alternatively, if it is a different month, we also don't care
         else:
@@ -518,14 +536,14 @@ def findOptionPercentage(targetDate):#returns the percentage of each option chos
     percentages = []
     while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
         if inBooking - count > 0:# we have reached the end of the database
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
             temp2 = tempBooking.date#format date until we only have an int of the days
             strTemp = temp2.split("/")#some formatting
             searchDate = int(strTemp[1])
             searchMonth = int(strTemp[0])
             if (searchDate == targetDate):#if it is the targeted date
                 optionsRented.append(tempBooking.hours)
-                
+
             if ((thisMonth - searchMonth != 0) or targetDate > searchDate):
                 foundDate = True#if it is a different month, we also don't care
         else:
@@ -550,25 +568,25 @@ def makePercentages(inList):#input is a list of different rental options
                 if (optionsCount[j] == inList[i]):
                     break#we found it so stop the loop
             optionsCount[j] += 1
-    
+
     for i in range(0, len(optionsCount)):
         total += optionsCount[i]#get the total number of rentals
-    
+
     for i in range(0, len(optionsCount)):
         percentage = (optionsCount[i]/total) * 100#calculate the percentage
         roundedPercentage = round(percentage, 2)
         num = options[i]
         tempString = "Percentage of people who rented for " + str(num) + " hours: " + str(roundedPercentage) + "%"#format the string
         percentageList.append(tempString)
-    
+
     return percentageList
-    
+
 
 
 
 def todaysMonth(temp):#input: a split list of the date it is today (see todaysDate())
     #output: corresponding month as a string
-    #list of months 
+    #list of months
     months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     thisMonth = int(temp[0])
     month = months[thisMonth-1]#the month it is today as a word
@@ -583,4 +601,4 @@ def todaysDate():#outputs a split list of month, day, year, in that order
 def todaysDay(tempString):#returns the day it is today as an int
     #input same as todaysMonth
     today = int(tempString[1])
-    return today 
+    return today
