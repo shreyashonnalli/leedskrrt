@@ -355,38 +355,6 @@ def feedback_form():
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
-@app.route('/revenue', methods=['GET', 'POST'])
-def revenue_page():
-
-    #variable prep
-    bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
-    inBooking = bookingFirst.bookingId
-
-    cDate = dt.date.today()#current date
-    strDate = cDate.strftime("%D")#convert into string
-    temp = strDate.split("/")#split the date into a list of month, date, year
-    int1 = int(temp[1])
-
-    foundDate = False
-    count = 0
-    totalPrice = 0
-
-    while not foundDate:
-        if inBooking - count > 0:
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()
-            temp2 = tempBooking.date#format date until we only have an int of the days
-            strTemp = temp2.split("/")
-            int2 = int(strTemp[1])
-            if (int1 - int2 > 7):#longer than a week ago we dont care about it anymore
-                foundDate = True
-            else:
-                totalPrice += tempBooking.price
-        else:
-            foundDate = True
-        count += 1
-
-    return render_template('revenue.html', title='revenue', totalPrice = totalPrice)
-
 @app.route('/unregistered_booking', methods=['GET', 'POST'])
 def unregistered_booking():
         scooters = Scooter.query.all()
@@ -430,3 +398,186 @@ def unregistered_payment():
             db.session.commit()
             return redirect(url_for("unregistered_confirmation_page"))
         return render_template('unregisteredPayment.html', title='Payment', form=form)
+
+@app.route('/revenue', methods=['GET', 'POST'])
+def revenue_page():
+    weekPrice = 0
+    weekPrices =[]
+    weekDates = []
+    percentages = []
+    dayPrice = 0
+    month = todaysMonth(todaysDate())#the current month
+    today = todaysDay(todaysDate())#the current day
+    testBooking = Booking.query.order_by(Booking.bookingId.desc()).first()#this will only wbe used to check if the database is empty
+    
+
+    if (testBooking != None):#our database is not empty
+        dayPrice = calculateRevenue(1)
+        weekPrice = calculateRevenue(7)
+        for i in range(7):#note, calculateDailyRevenue() works with a different index than its counterpart
+            #while calculateRevenue goes from 1...7 this one goes from 0...6 for a week
+            weekPrices.append(calculateDailyRevenue(i))
+            weekDates.append(today-i)#the number dates corresponding to each revenue
+        weekPriceLen = len(weekPrices)
+        popularDay = weekDates[calculatePopularDay(weekPrices)]#the index is shared so if most revenue is at index 3 so will be the date
+        percentages = findOptionPercentage(popularDay)#a list of the percentages for each booking
+        percentagesLen = len(percentages)
+    else:#our database is empty so return 0
+
+        weekPrice = 0
+        dayPrice = 0
+    
+    return render_template('revenue.html', title='revenue', weekPrice = weekPrice, 
+    dayPrice = dayPrice, weekPrices = weekPrices, month = month, weekPriceLen = weekPriceLen, 
+    weekDates = weekDates, popularDay = popularDay, percentages = percentages, percentagesLen = percentagesLen)
+
+
+
+#These are our functional methods
+def calculateRevenue(days):#a revenue calculating method based around the number of days you want the revenue for
+    #returns the total price in the date range
+    #ex, for todays date, number of days would be 1
+
+
+    bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
+    inBooking = bookingFirst.bookingId
+    foundDate = False
+    count = 0
+    totalPrice = 0
+    temp = todaysDate()
+    thisMonth = int(temp[0])#the month it is currently
+    today = int(temp[1])#the day it is today
+
+    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:# we have reached the end of the database
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            temp2 = tempBooking.date#format date until we only have an int of the days
+            strTemp = temp2.split("/")#some formatting
+            searchDate = int(strTemp[1])
+            searchMonth = int(strTemp[0])
+            if (today - searchDate >= days or (thisMonth - searchMonth != 0)):#longer than a week ago we dont care about it anymore
+                foundDate = True#alternatively, if it is a different month, we also don't care
+            else:
+                totalPrice += tempBooking.price
+        else:
+            foundDate = True
+        count += 1
+    return totalPrice
+
+def calculateDailyRevenue(days):#this method calculates the revenue of a specific day
+    #input: how many days back is the specific day
+    #like calculateRevenue() but not quite
+    bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
+    inBooking = bookingFirst.bookingId
+    foundDate = False
+    count = 0
+    totalPrice = 0
+    temp = todaysDate()
+    thisMonth = int(temp[0])#the month it is currently
+    today = int(temp[1])#the day it is today
+
+    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:# we have reached the end of the database
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            temp2 = tempBooking.date#format date until we only have an int of the days
+            strTemp = temp2.split("/")#some formatting
+            searchDate = int(strTemp[1])
+            searchMonth = int(strTemp[0])
+            if (today - searchDate == days):#if it is the targeted date
+                totalPrice += tempBooking.price
+                
+            if (today - searchDate > days or (thisMonth - searchMonth != 0)):#longer than a week ago we dont care about it anymore
+                foundDate = True#alternatively, if it is a different month, we also don't care
+        else:
+            foundDate = True
+        count += 1
+    return totalPrice
+
+def calculatePopularDay(prices):
+    largest = 0
+    index = 0#the only way this wouldnt change is if theyre all 0, so the biggest may as well be 0
+    for i in range(len(prices)):
+        if prices[i] > largest:
+            index = i
+            largest = prices[i]
+    return index
+
+def findOptionPercentage(targetDate):#returns the percentage of each option chosen for a specific day
+    #input: the number of a specific day
+    #like calculateDailyRevenue() but not quite
+    temp = todaysDate()
+    thisMonth = int(temp[0])#the month it is currently
+    bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
+    inBooking = bookingFirst.bookingId
+    foundDate = False
+    count = 0
+    optionsRented = []#this will be a list full of each hour rented for every date that matches
+    percentages = []
+    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:# we have reached the end of the database
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking    
+            temp2 = tempBooking.date#format date until we only have an int of the days
+            strTemp = temp2.split("/")#some formatting
+            searchDate = int(strTemp[1])
+            searchMonth = int(strTemp[0])
+            if (searchDate == targetDate):#if it is the targeted date
+                optionsRented.append(tempBooking.hours)
+                
+            if ((thisMonth - searchMonth != 0) or targetDate > searchDate):
+                foundDate = True#if it is a different month, we also don't care
+        else:
+            foundDate = True
+        count += 1
+    percentages = makePercentages(optionsRented)
+    return percentages
+
+def makePercentages(inList):#input is a list of different rental options
+    #the method counts duplicates and makes a list of each number of requested options
+    optionsCount = []#these lists will share their index
+    options = []
+    percentageList = []#this will be a list of percentages of each option
+    total = 0
+
+    for i in range(0, len(inList)):
+        if inList[i] not in options:#a new unique option
+            options.append(inList[i])#add it to the list of options
+            optionsCount.append(1)#our count starts at 1
+        else:
+            for j in range(0, len(optionsCount)):#look for the option in the array
+                if (optionsCount[j] == inList[i]):
+                    break#we found it so stop the loop
+            optionsCount[j] += 1
+    
+    for i in range(0, len(optionsCount)):
+        total += optionsCount[i]#get the total number of rentals
+    
+    for i in range(0, len(optionsCount)):
+        percentage = (optionsCount[i]/total) * 100#calculate the percentage
+        roundedPercentage = round(percentage, 2)
+        num = options[i]
+        tempString = "Percentage of people who rented for " + str(num) + " hours: " + str(roundedPercentage) + "%"#format the string
+        percentageList.append(tempString)
+    
+    return percentageList
+    
+
+
+
+def todaysMonth(temp):#input: a split list of the date it is today (see todaysDate())
+    #output: corresponding month as a string
+    #list of months 
+    months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    thisMonth = int(temp[0])
+    month = months[thisMonth-1]#the month it is today as a word
+    return month
+
+def todaysDate():#outputs a split list of month, day, year, in that order
+    cDate = dt.date.today()#current date
+    strDate = cDate.strftime("%D")#convert into string
+    dates = strDate.split("/")#split the date into a list of month, date, year
+    return dates
+
+def todaysDay(tempString):#returns the day it is today as an int
+    #input same as todaysMonth
+    today = int(tempString[1])
+    return today 
