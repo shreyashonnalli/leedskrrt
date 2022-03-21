@@ -1,6 +1,20 @@
 {% extends "baseManager.html" %}
 {% block content %}
 
-<h1>Revenue for past week:</h1>
-{{totalPrice}}
+<head>
+    <h1>Revenue of month {{month}}</h1>
+</head>
+
+<body>
+    <br><p>Revenue for today: £{{dayPrice}}</p><br>
+    <p>Revenue for past week: £{{weekPrice}}</p>
+    {% for i in range(0, weekPriceLen) %}
+        Day {{weekDates[i]}}th: {{weekPrices[i]}}<br>
+    {% endfor %}
+    <br>
+    <p>The most profitable day was the {{popularDay}}th</p>
+    {% for i in range(0, percentagesLen) %}
+       {{percentages[i]}}<br>
+    {% endfor %}
+</body>
 {% endblock %}
