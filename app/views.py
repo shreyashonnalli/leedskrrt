@@ -222,7 +222,7 @@ def viewscooters():
             bookingFirst = Booking.query.filter_by(scooterId= i).order_by(Booking.bookingId.desc()).first()
             if bookingFirst is None:
                 continue
-            if (((cDateTime - bookingFirst.datetime).total_seconds())) > bookingFirst.hours:
+            if (((cDateTime - bookingFirst.datetime).total_seconds())/3600) > bookingFirst.hours:
                  scooter = Scooter.query.filter_by(id = i).first()
                  scooter.availability = True
                  db.session.commit()
@@ -406,6 +406,9 @@ def revenue_page():
     weekDates = []
     percentages = []
     dayPrice = 0
+    weekPriceLen = 0
+    popularDay = 0#in case our db is empty
+    percentagesLen = 0
     month = todaysMonth(todaysDate())#the current month
     today = todaysDay(todaysDate())#the current day
     testBooking = Booking.query.order_by(Booking.bookingId.desc()).first()#this will only wbe used to check if the database is empty
