@@ -173,10 +173,6 @@ def managerindex():
         flash('You are not authorised to view this page', category='error')
         return redirect(url_for('index'))
 
-
-
-
-
 @app.route('/addscooters', methods=['GET', 'POST'])
 def addscooters():
     if current_user.role == 2:
@@ -250,7 +246,7 @@ def resolve_feedback(feedbackId):
 
 
 @app.route('/book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
-def mark_task(scooter_id):
+def choose_option(scooter_id):
     if current_user.role == 1:
         options = Options.query.all()
         weeklyScooterTime = weekly_usage_calculator()
@@ -416,6 +412,43 @@ def unregistered_payment():
             db.session.commit()
             return redirect(url_for("unregistered_confirmation_page"))
         return render_template('unregisteredPayment.html', title='Payment', form=form)
+
+
+@app.route('/viewbookings', methods=['GET', 'POST'])
+def viewbookings():
+    if current_user.role == 1:
+        customerId = current_user.get_id()
+        bookings = Booking.query.filter_by(customerId=customerId)
+        cDateTime = dt.datetime.now()
+        ongoing = list()
+        expired = list()
+        for booking in bookings:
+            if (((cDateTime - booking.datetime).total_seconds())/3600) > booking.hours:
+                expired.append(booking)
+            else:
+                ongoing.append(booking)
+    return render_template('viewBookings.html', title='Bookings', ongoing=ongoing, expired = expired)
+
+@app.route('/cancel_booking/<int:bookingId>', methods=['GET', 'POST'])
+def cancel_booking(bookingId):
+    booking = Booking.query.filter_by(bookingId=bookingId).first()
+    booking.hours = 0;
+    db.session.commit()
+    return redirect(url_for('viewbookings'))
+
+@app.route('/extend_booking/<int:bookingId>', methods=['GET', 'POST'])
+def extend_booking(bookingId):
+    options = Options.query.all()
+    return render_template('extendingOptions.html', title='Options', options=options, bookingId=bookingId)
+
+@app.route('/extend_scooter_option/<int:bookingId>/<int:option_id>', methods=['GET', 'POST'])
+def extend_booking_option(bookingId, option_id):
+    booking = Booking.query.filter_by(bookingId=bookingId).first()
+    bookingOption = Options.query.get(option_id)
+    booking.hours = booking.hours + bookingOption.hours
+    booking.price = booking.price + bookingOption.price
+    db.session.commit()
+    return redirect(url_for('viewbookings'))
 
 @app.route('/revenue', methods=['GET', 'POST'])
 def revenue_page():
