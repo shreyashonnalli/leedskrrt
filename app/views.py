@@ -413,7 +413,7 @@ def unregistered_payment():
             return redirect(url_for("unregistered_confirmation_page"))
         return render_template('unregisteredPayment.html', title='Payment', form=form)
 
-<<<<<<< HEAD
+
 @app.route('/viewbookings', methods=['GET', 'POST'])
 def viewbookings():
     if current_user.role == 1:
@@ -449,7 +449,7 @@ def extend_booking_option(bookingId, option_id):
     booking.price = booking.price + bookingOption.price
     db.session.commit()
     return redirect(url_for('viewbookings'))
-=======
+
 @app.route('/revenue', methods=['GET', 'POST'])
 def revenue_page():
     weekPrice = 0
@@ -635,4 +635,3 @@ def todaysDay(tempString):#returns the day it is today as an int
     #input same as todaysMonth
     today = int(tempString[1])
     return today
->>>>>>> main
