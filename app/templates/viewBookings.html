@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2><b>Ongoing Bookings</b></h2>
+<hr>
+    {% for ongoing in ongoing %}
+          <h5><b>{{ongoing.bookingId}}</b></h5>
+          <h6><b>Scooter -</b> {{ongoing.scooterId}}</h6>
+          <h6><b>Hours - </b> {{ongoing.hours}} </h6>
+          <h6><b>Price - </b> {{ongoing.price}} </h6>
+          <h6><b>Date and Time - </b> {{ongoing.datetime}} </h6>
+          <a href ="/cancel_booking/{{ ongoing.bookingId }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Cancel Booking</a>
+          <a href ="/extend_booking/{{ ongoing.bookingId }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Extend Booking</a>
+      <hr>
+    {% endfor %}
+
+<h2><b>Expired Bookings</b></h2>
+<hr>
+    {% for expired in expired %}
+          <h5><b>{{expired.bookingId}}</b></h5>
+          <h6><b>Scooter -</b> {{expired.scooterId}}</h6>
+          <h6><b>Hours - </b> {{expired.hours}} </h6>
+          <h6><b>Price - </b> {{expired.price}} </h6>
+          <h6><b>Date and Time - </b> {{expired.datetime}} </h6>
+      <hr>
+    {% endfor %}
+
+{% endblock %}
