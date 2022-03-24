@@ -1,11 +1,73 @@
-{% extends "baseManager.html" %}
+
 {% block content %}
 
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <head>
-    <h1>Revenue of month {{month}}</h1>
+    <p1>Revenue since beginning of month {{month}}</p1><br>
 </head>
 
 <body>
+    <!--our line graph-->
+    <canvas id="lineChart" style="width:100%;max-width:600px"></canvas>
+
+    <script>
+
+        new Chart("lineChart", {
+        type: "line",
+        data: {
+            labels: {{weekDates}},
+            datasets: [{
+            fill: false,
+            lineTension: 0,
+            data: {{weekPrices}}
+            }]
+        },
+        options: {
+            legend: {display: false},
+            title: {
+                display: true,
+                text: "Days in past week vs revenue in pounds"
+            }
+        }
+        });
+    </script>
+    <!-- end of our line graph-->
+    <br>
+    <!-- our pie chart-->
+    <canvas id="pieChart" style="width:100%;max-width:600px"></canvas>
+    <script>
+        var randomColor = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";//makes a random color
+         };
+        var colors = [] //a list of random clors as long as the number of datas we have
+        for (var label in {{labels}}){
+            colors.push(randomColor())//make a new random color, add it to the array
+        }
+
+        new Chart("pieChart", {
+            type: "pie",
+            data: {
+            labels: {{labels}},
+            datasets: [{
+                backgroundColor: colors,
+                data: {{values}}
+            }]
+            },
+            options: {
+            title: {
+                display: true,
+                text: "Number of hours a scooter is rented for on most profitable day"
+            }
+            }
+        });
+    </script>
+    <!-- end of our pie chart-->
+
     <br><p>Revenue for today: £{{dayPrice}}</p><br>
     <p>Revenue for past week: £{{weekPrice}}</p>
     {% for i in range(0, weekPriceLen) %}
@@ -16,7 +78,8 @@
     <p>The most profitable day was the {{popularDay}}th</p>
 
     {% for i in range(0, percentagesLen) %}
-       {{percentages[i]}}<br>
+    Percentage of people who rented for {{percentages[i][0]}} hours: {{percentages[i][1]}}<br>
     {% endfor %}
 </body>
+</html>
 {% endblock %}
