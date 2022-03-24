@@ -99,6 +99,7 @@ def registermanager():
 
 
 # Login view
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -157,7 +158,6 @@ def logout():
 
 
 # Home view
-@app.route('/')
 @app.route('/index')
 def index():
     home={'description':'Welcome.'}
@@ -256,7 +256,11 @@ def choose_option(scooter_id):
             for option in options:
                 option.price = math.ceil(option.price * 0.8)
 
-        return render_template('options.html', title='Options', options=options, id=scooter_id)
+        userId = current_user.get_id()
+        paymentCard = PaymentCard.query.filter_by(CustomerId = userId).first()
+        if (paymentCard is not None):
+            paymentId = paymentCard.CustomerId
+        return render_template('options.html', title='Options', options=options, id=scooter_id, paymentId=paymentId)
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
@@ -277,6 +281,33 @@ def weekly_usage_calculator():
         if booking.customerId == current_user.id and weekDifference == 0:
             hourCounter = hourCounter + booking.hours
     return hourCounter
+
+@app.route('/book_scooter/<int:scooter_id>/<int:option_id>/<int:paymentId>', methods=['GET', 'POST'])
+def storedpaymentbook(scooter_id, option_id, paymentId):
+    if current_user.role == 1:
+        #get current date
+        cDate = dt.date.today()
+        strDate = cDate.strftime("%D")#convert into string
+
+        scooter = Scooter.query.get(scooter_id)
+        scooter.availability = False
+        bookingOption = Options.query.get(option_id)
+
+        #apply discount for student and senior citizen
+        weeklyScooterTime = weekly_usage_calculator()
+        if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
+            bookingOption.price = math.ceil(bookingOption.price * 0.8)
+
+        userId = current_user.get_id()
+        cDateTime = dt.datetime.now()
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate, datetime = cDateTime)
+        db.session.add(newBooking)
+        db.session.commit()
+        flash("Scooter booked")
+        return redirect(url_for("confirmation_page"))
+    else:
+        flash('Our services are available to our customers only', category='error')
+        return redirect(url_for('managerindex'))
 
 
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
