@@ -489,6 +489,7 @@ def revenue_page():
 
     return render_template('revenue.html', title='revenue', weekPrice = weekPrice,
     dayPrice = dayPrice, weekPrices = weekPrices, month = month, weekPriceLen = weekPriceLen,
+
     weekDates = weekDates, popularDay = popularDay, percentages = percentages, percentagesLen = percentagesLen,
     labels = labels, values = values)
 
@@ -608,6 +609,12 @@ def makePercentages(inList):#input is a list of different rental options
                 if (optionsCount[j] == inList[i]):
                     break#we found it so stop the loop
             optionsCount[j] += 1
+
+    #now we make a 2d array, with the left side being the number of hours and the right side the percentage
+    percentageAndOptions = []
+    rows = len(options)#we will have as many wors as we have unique options
+    cols = 2#left is option, right is percentage
+    percentageAndOptions = [[0 for i in range(cols)] for j in range(rows)]
 
     #now we make a 2d array, with the left side being the number of hours and the right side the percentage
     percentageAndOptions = []
