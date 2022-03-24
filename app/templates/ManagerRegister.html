@@ -1,11 +1,22 @@
 {% extends "base2.html" %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="form-register-heading">Register</h2>
-        <form class="form-register" method="POST">
-            <!-- The tag below is used to prevent CSRF -->
+<section class="vh-100">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6 text-light bg-dark">
+
+        <div class="p-5 ms-xl-4">
+          <span class="h1 fw-bold mb-0-5">Skrrt</span>
+        </div>
+
+        <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
+
+          <form class= "form-register" method = "POST" style="width: 23rem;">
+            <!-- The tag below is use to prevent CSRF -->
             {{ form.hidden_tag() }}
+
+            <h3 class="fw-normal mb-3 pb-3 text-primary" style="letter-spacing: 1px;">Manager Registration</h3>
 
             <div class="form-group">
                 {{ form.email.label(class='form-control-label') }}
@@ -17,7 +28,12 @@
                 {{ form.password(class_='form-control') }}
             </div>
 
-            {% if form.password.errors %}<!-- for loop to display all errors if there are any-->
+            <div class="form-group">
+                {{ form.managerPassword.label(class='form-control-label') }}
+                {{ form.managerPassword(class_='form-control') }}
+            </div>
+
+            {% if form.password.errors %}
             <ul class="errors">
                 {% for error in form.password.errors %}
                     <li style="color:red; font-size:90%">
@@ -26,22 +42,23 @@
                 {% endfor %}
             </ul>
             {% endif %}
+            <br
+
+            <br>
 
             <div class="form-group">
-                {{ form.managerPassword.label(class='form-control-label') }}
-                {{ form.managerPassword(class_='form-control') }}
+              {{ form.submit(class_="btn btn-primary", style="width:100%") }}
             </div>
 
-            <br><!-- leave some space underneath the button it looks nicer-->
-
-
-            <div class="form-group">
-                {{ form.submit(class_="btn btn-primary") }}
-            </div>
-        </form>
-        <div class="d-flex justify-content-around align-items-center">
-            <p>Already have an account? <a href="{{ url_for('login') }}" id="login">Login</a></p>
-            <p>Registering as a user? <a href="{{ url_for('register') }}" id="register">Register</a></p>
+            <p>Already have an account? <a href="{{ url_for('login') }}" id="login" class="link-info">Login here</a></p>
+            <p>Registering as a user? <a href="{{ url_for('register') }}" id="register" class="link-info">Register here</a></p>
+          </form>
         </div>
+      </div>
+      <div class="col-sm-6 px-0 d-none d-sm-block">
+        <img src=/static/skrrt.jpeg class="w-100 vh-100" style="object-fit: cover; object-position: left;">
+      </div>
     </div>
+  </div>
+</section>S
 {% endblock %}

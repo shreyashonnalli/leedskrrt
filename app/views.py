@@ -450,12 +450,15 @@ def extend_booking_option(bookingId, option_id):
     db.session.commit()
     return redirect(url_for('viewbookings'))
 
+
 @app.route('/revenue', methods=['GET', 'POST'])
 def revenue_page():
     weekPrice = 0
     weekPrices =[]
     weekDates = []
     percentages = []
+    labels = []
+    values = []
     dayPrice = 0
     weekPriceLen = 0
     popularDay = 0#in case our db is empty
@@ -468,14 +471,17 @@ def revenue_page():
     if (testBooking != None):#our database is not empty
         dayPrice = calculateRevenue(1)
         weekPrice = calculateRevenue(7)
-        for i in range(7):#note, calculateDailyRevenue() works with a different index than its counterpart
-            #while calculateRevenue goes from 1...7 this one goes from 0...6 for a week
+        for i in range(6, -1, -1):#note, calculateDailyRevenue() works with a different index than its counterpart
+            #while calculateRevenue goes from 1...7 this one goes from 6...0 for a week
             weekPrices.append(calculateDailyRevenue(i))
             weekDates.append(today-i)#the number dates corresponding to each revenue
         weekPriceLen = len(weekPrices)
         popularDay = weekDates[calculatePopularDay(weekPrices)]#the index is shared so if most revenue is at index 3 so will be the date
-        percentages = findOptionPercentage(popularDay)#a list of the percentages for each booking
+        percentages = findOptionPercentage(popularDay)#a list of the percentages for each booking, 2 d
         percentagesLen = len(percentages)
+        #our final two variables, which will be used in the graphs
+        labels = [row[0] for row in percentages]#the number of hours rented, on the most popular day
+        values = [row[1] for row in percentages]#the percentage of people who rented each hour
     else:#our database is empty so return 0
 
         weekPrice = 0
@@ -483,7 +489,8 @@ def revenue_page():
 
     return render_template('revenue.html', title='revenue', weekPrice = weekPrice,
     dayPrice = dayPrice, weekPrices = weekPrices, month = month, weekPriceLen = weekPriceLen,
-    weekDates = weekDates, popularDay = popularDay, percentages = percentages, percentagesLen = percentagesLen)
+    weekDates = weekDates, popularDay = popularDay, percentages = percentages, percentagesLen = percentagesLen,
+    labels = labels, values = values)
 
 
 
@@ -585,11 +592,11 @@ def findOptionPercentage(targetDate):#returns the percentage of each option chos
     percentages = makePercentages(optionsRented)
     return percentages
 
+
 def makePercentages(inList):#input is a list of different rental options
     #the method counts duplicates and makes a list of each number of requested options
     optionsCount = []#these lists will share their index
     options = []
-    percentageList = []#this will be a list of percentages of each option
     total = 0
 
     for i in range(0, len(inList)):
@@ -602,17 +609,25 @@ def makePercentages(inList):#input is a list of different rental options
                     break#we found it so stop the loop
             optionsCount[j] += 1
 
+    #now we make a 2d array, with the left side being the number of hours and the right side the percentage
+    percentageAndOptions = []
+    rows = len(options)#we will have as many wors as we have unique options
+    cols = 2#left is option, right is percentage
+    percentageAndOptions = [[0 for i in range(cols)] for j in range(rows)]
+
     for i in range(0, len(optionsCount)):
         total += optionsCount[i]#get the total number of rentals
 
     for i in range(0, len(optionsCount)):
         percentage = (optionsCount[i]/total) * 100#calculate the percentage
         roundedPercentage = round(percentage, 2)
-        num = options[i]
-        tempString = "Percentage of people who rented for " + str(num) + " hours: " + str(roundedPercentage) + "%"#format the string
-        percentageList.append(tempString)
+        percentageAndOptions[i][0] = options[i]
+        percentageAndOptions[i][1] = roundedPercentage
 
-    return percentageList
+
+
+    return percentageAndOptions
+
 
 
 

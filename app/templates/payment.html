@@ -1,32 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container">
-        <h1 class="form-register-heading">Payment Information</h1>
-        <br>
-        <section class="bg-light text-dark p-3" >
-          <form class="form-register" method="POST">
-              <!-- The tag below is used to prevent CSRF -->
-              {{ form.hidden_tag() }}
-              <div class="form-group px5 py2">
-                  <h5> {{ form.cardNum.label(class='form-control-label') }} </h5>
-                  <h5>{{ form.cardNum(class_='form-control') }} </h5>
-              </div>
+<div class="mt-4 mx-4">
+  <div class="container bg-light text-dark p-3 text-center border border-primary rounded">
+    <div class="text-center">
+        <h3><b>Credit card<b></h3>
+    </div>
 
-              {% if form.cardNum.errors %}
-              <ul class="errors">
-                  {% for error in form.cardNum.errors %}
-                      <li style="color:red; font-size:90%">
-                          {{ error }}
-                      </li>
-                  {% endfor %}
-              </ul>
-              {% endif %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+      <h6 align="left">Cardholder name</h6>
+        <div class="inputbox"> {{ form.cardName(class_='form-control', placeholder="Name on card") }} </div>
+        {% if form.cardName.errors %}
+        <ul class="errors">
+            {% for error in form.cardName.errors %}
+                <li style="color:red; font-size:90%">
+                    {{ error }}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
-              <div class="form-group">
-                  <h5>{{ form.expiration.label(class='form-control-label') }}</h5>
-                  <h5>{{ form.expiration(class_='form-control') }}</h5>
-              </div>
+        <p></p>
 
+        <h6 align="left">Card number</h6>
+        <div class="inputbox"> {{ form.cardNum(class_='form-control', placeholder="XXXX XXXX XXXX XXXX") }}</div>
+        {% if form.cardNum.errors %}
+        <ul class="errors">
+            {% for error in form.cardNum.errors %}
+                <li style="color:red; font-size:90%">
+                    {{ error }}
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <p></p>
+
+        <div class="d-flex flex-row">
+          <div class="form-group col-md-2">
+            <h6 align="left">Expiry</h6>
+              <div class="inputbox"> {{ form.expiration(class_='form-control', placeholder='MM/YY', style="width: 100px;") }} </div>
               {% if form.expiration.errors %}
               <ul class="errors">
                   {% for error in form.expiration.errors %}
@@ -36,26 +49,27 @@
                   {% endfor %}
               </ul>
               {% endif %}
+          </div>
 
-              <div class="form-group">
-                  <h5>{{ form.securityNum.label(class='form-control-label') }}</h5>
-                  <h5>{{ form.securityNum(class_='form-control') }}</h5>
-              </div>
+          <div class="form-group col-md-6">
+            <h6 align="left">CVV</h6>
+            <div class="inputbox"> {{ form.securityNum(class_='form-control' , placeholder='XXX' , style="width: 100px;") }} </div>
+            {% if form.securityNum.errors %}
+            <ul class="errors">
+                {% for error in form.securityNum.errors %}
+                    <li style="color:red; font-size:90%">
+                        {{ error }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
 
-              {% if form.securityNum.errors %}
-              <ul class="errors">
-                  {% for error in form.securityNum.errors %}
-                      <li style="color:red; font-size:90%">
-                          {{ error }}
-                      </li>
-                  {% endfor %}
-              </ul>
-              {% endif %}
+        <p></p>
 
-              <div class="form-group">
-                  {{ form.submit(class_="btn btn-primary", style="width:100%") }}
-              </div>
-          </form>
-        </section>
-    </div>
+        <div class="px-5 pay"> {{ form.submit(class_="btn btn-primary", style="width:100%") }} </div>
+    </form>
+  </div>
+</div>
 {% endblock %}

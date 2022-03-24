@@ -52,7 +52,7 @@ class RegisterForm(FlaskForm):
 class RegisterManagerForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8),  checkForSpecialChar, checkForPassNumber])
-    managerPassword = PasswordField('Managerpassword', validators=[DataRequired()])
+    managerPassword = PasswordField("Manager's password", validators=[DataRequired()])
     submit = SubmitField('Register')
 
 class LoginForm(FlaskForm):
@@ -72,9 +72,10 @@ class AddPaymentMethodForm(FlaskForm):
     cardNum = StringField('Card Number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
     expiryDate = StringField('expiryDate', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
     cardName = StringField('cardName', validators=[DataRequired()])
-    submit = SubmitField('Add Payment Detail')
+    submit = SubmitField('Add Payment Details')
 
 class PaymentForm(FlaskForm):
+    cardName = StringField('cardName', validators=[DataRequired()])
     cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
     expiration = StringField('Expiration date', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
     securityNum = PasswordField('Security code', validators=[DataRequired(), validators.length(min=3, max=3), checkForNum])
@@ -91,5 +92,6 @@ class UnregisteredPaymentForm(FlaskForm):
     cardNum = StringField('Card number', validators=[DataRequired(), validators.length(min=16, max=16), checkForNum])
     expiration = StringField('Expiration date', validators=[DataRequired(), validators.length(min=3, max=4), checkForNum])
     securityNum = PasswordField('Security code', validators=[DataRequired(), validators.length(min=3, max=3), checkForNum])
+    cardName = StringField('cardName', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired()])
     submit = SubmitField('Purchase')

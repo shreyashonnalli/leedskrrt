@@ -21,7 +21,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
       <div class="container">
-        <a class="navbar-brand" href="#">Company Name</a>
+        <a class="navbar-brand" href="#">Skrrt</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
           <span class="navbar-toggler-icon"></span>
@@ -55,20 +55,20 @@
     {% endwith %}
     <section class="bg-dark text-light p-3 text-center" >
      <div class="container">
-           <h1><span class="text-light"> {% block content %}{% endblock %} </span></h1>
+           <h1><span class="text-light">
+             <h1>All Scooters</h1>
+
+                 <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
+                 {% for option in options %}
+                       <h5><b>{{option.id}}</b></h5>
+                       <h6><b>Hours -</b> {{option.hours}}</h6>
+                       <h6><b>Price -</b> {{option.price}}</h6>
+                       <a href ="/unregistered_book_scooter/{{ id }}/{{ option.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
+                   <hr>
+                 {% endfor %}
+           </span></h1>
      </div>
    </section>
-
-   <h1>All Scooters</h1>
-
-       <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
-       {% for option in options %}
-             <h5><b>{{option.id}}</b></h5>
-             <h6><b>Hours -</b> {{option.hours}}</h6>
-             <h6><b>Price -</b> {{option.price}}</h6>
-             <a href ="/unregistered_book_scooter/{{ id }}/{{ option.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
-         <hr>
-       {% endfor %}
 
     <!-- jQuery, Popper.js, and Bootstrap JS respectively -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
