@@ -21,7 +21,6 @@ class Options(db.Model):
     hours = db.Column(db.Integer)
     price = db.Column(db.Integer)
 
-
 class Booking(db.Model):
     bookingId = db.Column(db.Integer, primary_key=True)
     customerId = db.Column(db.Integer)

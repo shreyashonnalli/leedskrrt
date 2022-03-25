@@ -5,9 +5,9 @@ from wtforms.validators import ValidationError
 from flask import flash
 
 
-#start of our custom validators
+# Start of our custom validators
 
-#custom validator, which checks the input string to see if it is an integer
+# Custom validator, which checks the input string to see if it is an integer
 def checkForNum(form, field):
     if (not field.data.isdigit()):
         raise ValidationError('Must be a number')
@@ -16,31 +16,31 @@ def checkForZero(form, field):
     if (field.data < 1 or field.data > 9):
         raise ValidationError('Must be from 1-9')
 
-#custom validator, which checks that the string contains at least one special character
+# Custom validator, which checks that the string contains at least one special character
 def checkForSpecialChar(form, field):
     foundChar = False
-    characters = """!"#$%&'()*+,-./:;<=>?@[\]^_`{"""# a string composing of every special character
-    for i in field.data:#iterate over each character in our input
-        for j in characters:#for each char in field iterate over the special characters
-            if (i == j):#if we have found one that matches
+    characters = """!"#$%&'()*+,-./:;<=>?@[\]^_`{"""    # a string composing of every special character
+    for i in field.data:    # iterate over each character in our input
+        for j in characters:    # for each char in field iterate over the special characters
+            if (i == j):    # if we have found one that matches
                 foundChar = True
-                break#stop the loop
+                break   # stop the loop
 
     if (not foundChar):
         raise ValidationError('Must contain at least one special character')
 
-#custom validator similair to checkForSpecialChar, which checks that the input has at least 1 number
+# Custom validator similar to checkForSpecialChar, which checks that the input has at least 1 number
 def checkForPassNumber(form, field):
     foundInt = False
-    for i in field.data:#iterate over each character in our input
-        if(i.isdigit()):#if it is a number
+    for i in field.data:    # iterate over each character in our input
+        if(i.isdigit()):    # if it is a number
             foundInt = True
-            break#stop the loop
+            break   # stop the loop
 
     if (not foundInt):
         raise ValidationError('Must contain at least one number')
 
-#end of our custom validators
+# End of our custom validators
 
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])

@@ -8,6 +8,8 @@ import datetime as dt
 from flask_mail import Mail, Message
 import math
 
+
+# Sends mail through the SMTP protocol
 app.config['MAIL_SERVER']='smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
 app.config['MAIL_USERNAME'] = '95ebe879afef61'
@@ -33,7 +35,6 @@ def before_request():
     app.permanent_session_lifetime = timedelta(minutes=60 * 2)
 
 
-
 @login_manager.user_loader
 def load_user(id):
     return Account.query.get(int(id))
@@ -57,11 +58,14 @@ def register():
             student = form.student.data
             seniorCitizen = form.seniorCitizen.data
             if student == True and seniorCitizen == True:
-                flash('Cant apply for student discount and senior citizen discount', category='error')
+                flash('Cant apply for student discount and senior citizen discount', 
+                    category='error')
                 return redirect(url_for('register'))
-            # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
+            # Encrypts password using bcrypt, this is so the password is not shown as 
+            # plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_customer = Account(email=email, password=hashed_password, role=role,student=student,seniorCitizen=seniorCitizen)
+            new_customer = Account(email=email, password=hashed_password, role=role,
+                student=student,seniorCitizen=seniorCitizen)
             # Adds the customer account to the database
             db.session.add(new_customer)
             db.session.commit()
@@ -87,9 +91,11 @@ def registermanager():
             role = 2
             password = form.password.data
 
-            # Encrypts password using bcrypt, this is so the password is not shown as plain-text in the database.
+            # Encrypts password using bcrypt, this is so the password is not shown as plain-text 
+            # in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_manager = Account(email=email, password=hashed_password, role=role,student=False,seniorCitizen=False)
+            new_manager = Account(email=email, password=hashed_password, role=role,student=False, 
+                seniorCitizen=False)
             # Adds the customer account to the database
             db.session.add(new_manager)
             db.session.commit()
@@ -112,10 +118,12 @@ def login():
             # Checks to see if password from database matches the inputted password
             if bcrypt.check_password_hash(account.password, form.password.data):
                 flash("Successfully logged in!", category='success')
-                # If user has ticked remember me checkbox, then a remember me cookie is created locally
+                # If user has ticked remember me checkbox, then a remember me cookie is 
+                # created locally
                 if form.remember.data:
-                    # Cookie will stay alive for 14 days, once expired the user will need to sign in again
-                    # If user signs out manually or clears cookies from browser then the user will need to sign in again
+                    # Cookie will stay alive for 14 days, once expired the user will need to sign 
+                    # in again. If user signs out manually or clears cookies from browser then the 
+                    # user will need to sign in again
                     login_user(account, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('index'))
                 else:
@@ -129,10 +137,12 @@ def login():
             # Checks to see if password from database matches the inputted password
             if bcrypt.check_password_hash(account.password, form.password.data):
                 flash("Successfully logged in!", category='success')
-                # If user has ticked remember me checkbox, then a remember me cookie is created locally
+                # If user has ticked remember me checkbox, then a remember me cookie is 
+                # created locally
                 if form.remember.data:
-                    # Cookie will stay alive for 14 days, once expired the user will need to sign in again
-                    # If user signs out manually or clears cookies from browser then the user will need to sign in again
+                    # Cookie will stay alive for 14 days, once expired the user will need to 
+                    # sign in again. If user signs out manually or clears cookies from browser then 
+                    # the user will need to sign in again
                     login_user(account, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('managerindex'))
                 else:
@@ -163,6 +173,8 @@ def index():
     home={'description':'Welcome.'}
     return render_template('home.html', title='Home', home=home, account=current_user)
 
+
+# Manager home view
 @app.route('/managerindex')
 @login_required
 def managerindex():
@@ -173,6 +185,8 @@ def managerindex():
         flash('You are not authorised to view this page', category='error')
         return redirect(url_for('index'))
 
+
+# Add scooters view
 @app.route('/addscooters', methods=['GET', 'POST'])
 def addscooters():
     if current_user.role == 2:
@@ -190,6 +204,7 @@ def addscooters():
         return redirect(url_for('index'))
 
 
+# Add options view
 @app.route('/addoptions', methods=['GET', 'POST'])
 def addoptions():
     if current_user.role == 2:
@@ -207,6 +222,8 @@ def addoptions():
         flash('You are not authorised to view this page', category='error')
         return redirect(url_for('index'))
 
+
+# View scooters
 @app.route('/viewscooters', methods=['GET', 'POST'])
 def viewscooters():
     booking = Booking.query.all()
@@ -226,6 +243,8 @@ def viewscooters():
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 
 
+
+# Manager can view feedback
 @app.route('/view_feedback', methods=['GET', 'POST'])
 def view_feedback():
     if current_user.role == 2:
@@ -245,12 +264,13 @@ def resolve_feedback(feedbackId):
     return redirect(url_for('view_feedback'))
 
 
+# Book scooters view
 @app.route('/book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
 def choose_option(scooter_id):
     if current_user.role == 1:
         options = Options.query.all()
         weeklyScooterTime = weekly_usage_calculator()
-        #should the discount be applied?
+        # Should the discount be applied?
         if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
             flash('Discount applied!',category='success')
             for option in options:
@@ -262,47 +282,49 @@ def choose_option(scooter_id):
             paymentId = paymentCard.CustomerId
         else:
             paymentId = 0
-        return render_template('options.html', title='Options', options=options, id=scooter_id, paymentId=paymentId)
+        return render_template('options.html', title='Options', options=options, id=scooter_id, 
+            paymentId=paymentId)
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
-
 def weekly_usage_calculator():
     hourCounter = 0
-    #get all bookings
+    # Get all bookings
     bookings = Booking.query.all()
-    #get todays date
+    # Get todays date
     today = dt.date.today()
     for booking in bookings:
-        #Create a date object from string in database
+        # Create a date object from string in database
         bookingDateObject = dt.datetime.strptime(booking.date, "%m/%d/%y").date()
-        #floor division to calculate difference in weeks
+        # Floor division to calculate difference in weeks
         weekDifference = (today-bookingDateObject).days//7
-        #if this user has a booking in the most recent week then add to counter
+        # If this user has a booking in the most recent week then add to counter
         if booking.customerId == current_user.id and weekDifference == 0:
             hourCounter = hourCounter + booking.hours
     return hourCounter
 
+
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>/<int:paymentId>', methods=['GET', 'POST'])
 def storedpaymentbook(scooter_id, option_id, paymentId):
     if current_user.role == 1:
-        #get current date
+        # Get current date
         cDate = dt.date.today()
-        strDate = cDate.strftime("%D")#convert into string
+        strDate = cDate.strftime("%D")  # convert into string
 
         scooter = Scooter.query.get(scooter_id)
         scooter.availability = False
         bookingOption = Options.query.get(option_id)
 
-        #apply discount for student and senior citizen
+        # Apply discount for student and senior citizen
         weeklyScooterTime = weekly_usage_calculator()
         if current_user.student == True or current_user.seniorCitizen == True or weeklyScooterTime > 7:
             bookingOption.price = math.ceil(bookingOption.price * 0.8)
 
         userId = current_user.get_id()
         cDateTime = dt.datetime.now()
-        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate, datetime = cDateTime)
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, 
+            hours = bookingOption.hours, date=strDate, datetime = cDateTime)
         db.session.add(newBooking)
         db.session.commit()
         flash("Scooter booked")
@@ -311,12 +333,13 @@ def storedpaymentbook(scooter_id, option_id, paymentId):
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
+
 @app.route('/book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
 def book_scooter(scooter_id, option_id):
     if current_user.role == 1:
-        #get current date
+        # Get current date
         cDate = dt.date.today()
-        strDate = cDate.strftime("%D")#convert into string
+        strDate = cDate.strftime("%D")  # convert into string
 
         scooter = Scooter.query.get(scooter_id)
         scooter.availability = False
@@ -329,7 +352,8 @@ def book_scooter(scooter_id, option_id):
 
         userId = current_user.get_id()
         cDateTime = dt.datetime.now()
-        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, hours = bookingOption.hours, date=strDate, datetime = cDateTime)
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, 
+            hours = bookingOption.hours, date=strDate, datetime = cDateTime)
         db.session.add(newBooking)
         db.session.commit()
         flash("Scooter booked")
@@ -337,6 +361,7 @@ def book_scooter(scooter_id, option_id):
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
+
 
 @app.route('/book_scooter/confirmation_page', methods=['GET', 'POST'])
 def confirmation_page():
@@ -352,6 +377,8 @@ def confirmation_page():
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
+
+# Payment view
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
     if current_user.role == 1:
@@ -364,6 +391,8 @@ def payment():
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
+
+# Add payment details view
 @app.route('/add_payment_details', methods=['GET','POST'])
 def add_payment_details():
     if current_user.role == 1:
@@ -383,6 +412,8 @@ def add_payment_details():
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
+
+# Send feedback view
 @app.route('/send_feedback_form', methods=['GET','POST'])
 def feedback_form():
     if current_user.role == 1:
@@ -401,21 +432,24 @@ def feedback_form():
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
 
+
 @app.route('/unregistered_booking', methods=['GET', 'POST'])
 def unregistered_booking():
         scooters = Scooter.query.all()
         return render_template('unregisteredBooking.html', title='Scooters', scooters=scooters)
+
 
 @app.route('/unregistered_book_scooter/<int:scooter_id>', methods=['GET', 'POST'])
 def unregistered_view_options(scooter_id):
         options = Options.query.all()
         return render_template('unregisteredOptions.html', title='Options', options=options, id=scooter_id)
 
+
 @app.route('/unregistered_book_scooter/<int:scooter_id>/<int:option_id>', methods=['GET', 'POST'])
 def unregistered_book_scooter(scooter_id, option_id):
         #get current date
         cDate = dt.date.today()
-        strDate = cDate.strftime("%D")#convert into string
+        strDate = cDate.strftime("%D")  # convert into string
         scooter = Scooter.query.get(scooter_id)
         scooter.availability = False
         bookingOption = Options.query.get(option_id)
@@ -425,6 +459,7 @@ def unregistered_book_scooter(scooter_id, option_id):
         flash("Scooter booked")
         return redirect(url_for("unregistered_payment"))
 
+
 @app.route('/unregistered_book_scooter/unregistered_confirmation_page', methods=['GET', 'POST'])
 def unregistered_confirmation_page():
         booking = UnregisteredBooking.query.order_by(UnregisteredBooking.bookingId.desc()).first()
@@ -433,6 +468,7 @@ def unregistered_confirmation_page():
         msg.body = 'Hello ' + str(nemail) + '\nBooking ID: '  + str(booking.bookingId) + '\nScooter ID: ' + str(booking.scooterId) + '\nPrice: ' + str(booking.price) + '\nHours: ' + str(booking.hours)
         mail.send(msg)
         return render_template('unregisteredConfirmation.html', title='Confirmation', booking = booking)
+
 
 @app.route('/unregisteredpayment', methods=['GET', 'POST'])
 def unregistered_payment():
@@ -446,6 +482,7 @@ def unregistered_payment():
         return render_template('unregisteredPayment.html', title='Payment', form=form)
 
 
+# View bookings view
 @app.route('/viewbookings', methods=['GET', 'POST'])
 def viewbookings():
     if current_user.role == 1:
@@ -461,6 +498,7 @@ def viewbookings():
                 ongoing.append(booking)
     return render_template('viewBookings.html', title='Bookings', ongoing=ongoing, expired = expired)
 
+
 @app.route('/cancel_booking/<int:bookingId>', methods=['GET', 'POST'])
 def cancel_booking(bookingId):
     booking = Booking.query.filter_by(bookingId=bookingId).first()
@@ -468,10 +506,12 @@ def cancel_booking(bookingId):
     db.session.commit()
     return redirect(url_for('viewbookings'))
 
+
 @app.route('/extend_booking/<int:bookingId>', methods=['GET', 'POST'])
 def extend_booking(bookingId):
     options = Options.query.all()
     return render_template('extendingOptions.html', title='Options', options=options, bookingId=bookingId)
+
 
 @app.route('/extend_scooter_option/<int:bookingId>/<int:option_id>', methods=['GET', 'POST'])
 def extend_booking_option(bookingId, option_id):
@@ -485,6 +525,11 @@ def extend_booking_option(bookingId, option_id):
 
 @app.route('/revenue', methods=['GET', 'POST'])
 def revenue_page():
+    # Restrict customers from viewing revenue
+    if (current_user.role == 2) == False:
+        flash('You are not authorised to view this page', category='error')
+        return redirect(url_for('index'))
+
     weekPrice = 0
     weekPrices =[]
     weekDates = []
@@ -493,28 +538,28 @@ def revenue_page():
     values = []
     dayPrice = 0
     weekPriceLen = 0
-    popularDay = 0#in case our db is empty
+    popularDay = 6    # in case our db is empty
     percentagesLen = 0
-    month = todaysMonth(todaysDate())#the current month
-    today = todaysDay(todaysDate())#the current day
-    testBooking = Booking.query.order_by(Booking.bookingId.desc()).first()#this will only wbe used to check if the database is empty
+    month = todaysMonth(todaysDate())   # the current month
+    today = todaysDay(todaysDate()) # the current day
+    testBooking = Booking.query.order_by(Booking.bookingId.desc()).first()  # this will only wbe used to check if the database is empty
 
 
-    if (testBooking != None):#our database is not empty
+    if (testBooking != None):   # our database is not empty
         dayPrice = calculateRevenue(1)
         weekPrice = calculateRevenue(7)
-        for i in range(6, -1, -1):#note, calculateDailyRevenue() works with a different index than its counterpart
-            #while calculateRevenue goes from 1...7 this one goes from 6...0 for a week
+        for i in range(6, -1, -1):  # Note: calculateDailyRevenue() works with a different index than its counterpart
+            # while calculateRevenue goes from 1...7 this one goes from 6...0 for a week
             weekPrices.append(calculateDailyRevenue(i))
-            weekDates.append(today-i)#the number dates corresponding to each revenue
+            weekDates.append(today-i)   # the number dates corresponding to each revenue
         weekPriceLen = len(weekPrices)
-        popularDay = weekDates[calculatePopularDay(weekPrices)]#the index is shared so if most revenue is at index 3 so will be the date
-        percentages = findOptionPercentage(popularDay)#a list of the percentages for each booking, 2 d
+        popularDay = weekDates[calculatePopularDay(weekPrices)] # the index is shared so if most revenue is at index 3 so will be the date
+        percentages = findOptionPercentage(popularDay)  # a list of the percentages for each booking, 2 d
         percentagesLen = len(percentages)
-        #our final two variables, which will be used in the graphs
-        labels = [row[0] for row in percentages]#the number of hours rented, on the most popular day
-        values = [row[1] for row in percentages]#the percentage of people who rented each hour
-    else:#our database is empty so return 0
+        # Our final two variables, which will be used in the graphs
+        labels = [row[0] for row in percentages]    # the number of hours rented, on the most popular day
+        values = [row[1] for row in percentages]    # the percentage of people who rented each hour
+    else:   # our database is empty so return 0
 
         weekPrice = 0
         dayPrice = 0
@@ -526,12 +571,10 @@ def revenue_page():
     labels = labels, values = values)
 
 
-
-#These are our functional methods
-def calculateRevenue(days):#a revenue calculating method based around the number of days you want the revenue for
-    #returns the total price in the date range
-    #ex, for todays date, number of days would be 1
-
+# These are our functional methods
+def calculateRevenue(days): # a revenue calculating method based around the number of days you want the revenue for
+    # Returns the total price in the date range
+    # ex, for todays date, number of days would be 1
 
     bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
     inBooking = bookingFirst.bookingId
@@ -539,18 +582,18 @@ def calculateRevenue(days):#a revenue calculating method based around the number
     count = 0
     totalPrice = 0
     temp = todaysDate()
-    thisMonth = int(temp[0])#the month it is currently
-    today = int(temp[1])#the day it is today
+    thisMonth = int(temp[0])    # the month it is currently
+    today = int(temp[1])    # the day it is today
 
-    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
-        if inBooking - count > 0:# we have reached the end of the database
+    while not foundDate:    # loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:   # we have reached the end of the database
             tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
-            temp2 = tempBooking.date#format date until we only have an int of the days
-            strTemp = temp2.split("/")#some formatting
+            temp2 = tempBooking.date    # format date until we only have an int of the days
+            strTemp = temp2.split("/")  # some formatting
             searchDate = int(strTemp[1])
             searchMonth = int(strTemp[0])
-            if (today - searchDate >= days or (thisMonth - searchMonth != 0)):#longer than a week ago we dont care about it anymore
-                foundDate = True#alternatively, if it is a different month, we also don't care
+            if (today - searchDate >= days or (thisMonth - searchMonth != 0)):  # longer than a week ago we dont care about it anymore
+                foundDate = True    # alternatively, if it is a different month, we also don't care
             else:
                 totalPrice += tempBooking.price
         else:
@@ -558,67 +601,70 @@ def calculateRevenue(days):#a revenue calculating method based around the number
         count += 1
     return totalPrice
 
-def calculateDailyRevenue(days):#this method calculates the revenue of a specific day
-    #input: how many days back is the specific day
-    #like calculateRevenue() but not quite
+
+def calculateDailyRevenue(days):    # this method calculates the revenue of a specific day
+    # input: how many days back is the specific day
+    # like calculateRevenue() but not quite
     bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
     inBooking = bookingFirst.bookingId
     foundDate = False
     count = 0
     totalPrice = 0
     temp = todaysDate()
-    thisMonth = int(temp[0])#the month it is currently
-    today = int(temp[1])#the day it is today
+    thisMonth = int(temp[0])    # the month it is currently
+    today = int(temp[1])    # the day it is today
 
-    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
-        if inBooking - count > 0:# we have reached the end of the database
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
-            temp2 = tempBooking.date#format date until we only have an int of the days
-            strTemp = temp2.split("/")#some formatting
+    while not foundDate:    # loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:   # we have reached the end of the database
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()    # the latest booking
+            temp2 = tempBooking.date    # format date until we only have an int of the days
+            strTemp = temp2.split("/")  # some formatting
             searchDate = int(strTemp[1])
             searchMonth = int(strTemp[0])
-            if (today - searchDate == days):#if it is the targeted date
+            if (today - searchDate == days):    # if it is the targeted date
                 totalPrice += tempBooking.price
 
-            if (today - searchDate > days or (thisMonth - searchMonth != 0)):#longer than a week ago we dont care about it anymore
-                foundDate = True#alternatively, if it is a different month, we also don't care
+            if (today - searchDate > days or (thisMonth - searchMonth != 0)):   # longer than a week ago we dont care about it anymore
+                foundDate = True    # alternatively, if it is a different month, we also don't care
         else:
             foundDate = True
         count += 1
     return totalPrice
 
+
 def calculatePopularDay(prices):
     largest = 0
-    index = 0#the only way this wouldnt change is if theyre all 0, so the biggest may as well be 0
+    index = 6    # the only way this wouldnt change is if theyre all 0, so the biggest may as well be 0
     for i in range(len(prices)):
         if prices[i] > largest:
             index = i
             largest = prices[i]
     return index
 
-def findOptionPercentage(targetDate):#returns the percentage of each option chosen for a specific day
-    #input: the number of a specific day
-    #like calculateDailyRevenue() but not quite
+
+def findOptionPercentage(targetDate):   # returns the percentage of each option chosen for a specific day
+    # input: the number of a specific day
+    # like calculateDailyRevenue() but not quite
     temp = todaysDate()
     thisMonth = int(temp[0])#the month it is currently
     bookingFirst = Booking.query.order_by(Booking.bookingId.desc()).first()
     inBooking = bookingFirst.bookingId
     foundDate = False
     count = 0
-    optionsRented = []#this will be a list full of each hour rented for every date that matches
+    optionsRented = []  # this will be a list full of each hour rented for every date that matches
     percentages = []
-    while not foundDate:#loop through the database until we find a date which is longer ago than what we want, a week
-        if inBooking - count > 0:# we have reached the end of the database
-            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()#the latest booking
-            temp2 = tempBooking.date#format date until we only have an int of the days
-            strTemp = temp2.split("/")#some formatting
+    while not foundDate:    # loop through the database until we find a date which is longer ago than what we want, a week
+        if inBooking - count > 0:   # we have reached the end of the database
+            tempBooking = Booking.query.filter_by(bookingId = inBooking - count).first()    # the latest booking
+            temp2 = tempBooking.date    # format date until we only have an int of the days
+            strTemp = temp2.split("/")  # some formatting
             searchDate = int(strTemp[1])
             searchMonth = int(strTemp[0])
-            if (searchDate == targetDate):#if it is the targeted date
+            if (searchDate == targetDate):  # if it is the targeted date
                 optionsRented.append(tempBooking.hours)
 
             if ((thisMonth - searchMonth != 0) or targetDate > searchDate):
-                foundDate = True#if it is a different month, we also don't care
+                foundDate = True    # if it is a different month, we also don't care
         else:
             foundDate = True
         count += 1
@@ -626,66 +672,60 @@ def findOptionPercentage(targetDate):#returns the percentage of each option chos
     return percentages
 
 
-def makePercentages(inList):#input is a list of different rental options
-    #the method counts duplicates and makes a list of each number of requested options
-    optionsCount = []#these lists will share their index
+def makePercentages(inList):    # input is a list of different rental options
+    # the method counts duplicates and makes a list of each number of requested options
+    optionsCount = []   # these lists will share their index
     options = []
     total = 0
 
     for i in range(0, len(inList)):
-        if inList[i] not in options and inList[i] != 0:#a new unique option
-            options.append(inList[i])#add it to the list of options
-            optionsCount.append(1)#our count starts at 1
+        if inList[i] not in options and inList[i] != 0: # a new unique option
+            options.append(inList[i])   # add it to the list of options
+            optionsCount.append(1)  # our count starts at 1
         else:
-            for j in range(0, len(optionsCount)):#look for the option in the array
+            for j in range(0, len(optionsCount)):   # look for the option in the array
                 if (optionsCount[j] == inList[i]):
-                    break#we found it so stop the loop
+                    break   # we found it so stop the loop
             optionsCount[j] += 1
 
-    #now we make a 2d array, with the left side being the number of hours and the right side the percentage
+    # Now we make a 2d array, with the left side being the number of hours and the right side the percentage
     percentageAndOptions = []
-    rows = len(options)#we will have as many wors as we have unique options
-    cols = 2#left is option, right is percentage
+    rows = len(options) # we will have as many wors as we have unique options
+    cols = 2    # left is option, right is percentage
     percentageAndOptions = [[0 for i in range(cols)] for j in range(rows)]
 
-    #now we make a 2d array, with the left side being the number of hours and the right side the percentage
+    # Now we make a 2d array, with the left side being the number of hours and the right side the percentage
     percentageAndOptions = []
-    rows = len(options)#we will have as many wors as we have unique options
-    cols = 2#left is option, right is percentage
+    rows = len(options) # we will have as many wors as we have unique options
+    cols = 2    # left is option, right is percentage
     percentageAndOptions = [[0 for i in range(cols)] for j in range(rows)]
 
     for i in range(0, len(optionsCount)):
-        total += optionsCount[i]#get the total number of rentals
+        total += optionsCount[i]    # get the total number of rentals
 
     for i in range(0, len(optionsCount)):
-        percentage = (optionsCount[i]/total) * 100#calculate the percentage
+        percentage = (optionsCount[i]/total) * 100  # calculate the percentage
         roundedPercentage = round(percentage, 2)
         percentageAndOptions[i][0] = options[i]
         percentageAndOptions[i][1] = roundedPercentage
 
-
-
     return percentageAndOptions
 
-
-
-
-
-def todaysMonth(temp):#input: a split list of the date it is today (see todaysDate())
-    #output: corresponding month as a string
-    #list of months
+def todaysMonth(temp):  # input: a split list of the date it is today (see todaysDate())
+    # Output: corresponding month as a string
+    # list of months
     months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     thisMonth = int(temp[0])
-    month = months[thisMonth-1]#the month it is today as a word
+    month = months[thisMonth-1] # the month it is today as a word
     return month
 
-def todaysDate():#outputs a split list of month, day, year, in that order
-    cDate = dt.date.today()#current date
-    strDate = cDate.strftime("%D")#convert into string
-    dates = strDate.split("/")#split the date into a list of month, date, year
+def todaysDate():   # outputs a split list of month, day, year, in that order
+    cDate = dt.date.today() # current date
+    strDate = cDate.strftime("%D")  # convert into string
+    dates = strDate.split("/")  # split the date into a list of month, date, year
     return dates
 
-def todaysDay(tempString):#returns the day it is today as an int
-    #input same as todaysMonth
+def todaysDay(tempString):  # returns the day it is today as an int
+    # input same as todaysMonth
     today = int(tempString[1])
     return today
