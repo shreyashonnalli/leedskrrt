@@ -58,10 +58,10 @@ def register():
             student = form.student.data
             seniorCitizen = form.seniorCitizen.data
             if student == True and seniorCitizen == True:
-                flash('Cant apply for student discount and senior citizen discount', 
+                flash('Cant apply for student discount and senior citizen discount',
                     category='error')
                 return redirect(url_for('register'))
-            # Encrypts password using bcrypt, this is so the password is not shown as 
+            # Encrypts password using bcrypt, this is so the password is not shown as
             # plain-text in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
             new_customer = Account(email=email, password=hashed_password, role=role,
@@ -91,10 +91,10 @@ def registermanager():
             role = 2
             password = form.password.data
 
-            # Encrypts password using bcrypt, this is so the password is not shown as plain-text 
+            # Encrypts password using bcrypt, this is so the password is not shown as plain-text
             # in the database.
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_manager = Account(email=email, password=hashed_password, role=role,student=False, 
+            new_manager = Account(email=email, password=hashed_password, role=role,student=False,
                 seniorCitizen=False)
             # Adds the customer account to the database
             db.session.add(new_manager)
@@ -118,11 +118,11 @@ def login():
             # Checks to see if password from database matches the inputted password
             if bcrypt.check_password_hash(account.password, form.password.data):
                 flash("Successfully logged in!", category='success')
-                # If user has ticked remember me checkbox, then a remember me cookie is 
+                # If user has ticked remember me checkbox, then a remember me cookie is
                 # created locally
                 if form.remember.data:
-                    # Cookie will stay alive for 14 days, once expired the user will need to sign 
-                    # in again. If user signs out manually or clears cookies from browser then the 
+                    # Cookie will stay alive for 14 days, once expired the user will need to sign
+                    # in again. If user signs out manually or clears cookies from browser then the
                     # user will need to sign in again
                     login_user(account, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('index'))
@@ -137,11 +137,11 @@ def login():
             # Checks to see if password from database matches the inputted password
             if bcrypt.check_password_hash(account.password, form.password.data):
                 flash("Successfully logged in!", category='success')
-                # If user has ticked remember me checkbox, then a remember me cookie is 
+                # If user has ticked remember me checkbox, then a remember me cookie is
                 # created locally
                 if form.remember.data:
-                    # Cookie will stay alive for 14 days, once expired the user will need to 
-                    # sign in again. If user signs out manually or clears cookies from browser then 
+                    # Cookie will stay alive for 14 days, once expired the user will need to
+                    # sign in again. If user signs out manually or clears cookies from browser then
                     # the user will need to sign in again
                     login_user(account, remember=True, duration=timedelta(days=14))
                     return redirect(url_for('managerindex'))
@@ -237,8 +237,9 @@ def viewscooters():
                 continue
             if (((cDateTime - bookingFirst.datetime).total_seconds())/3600) > bookingFirst.hours:
                  scooter = Scooter.query.filter_by(id = i).first()
-                 scooter.availability = True
-                 db.session.commit()
+                 if scooter is not None:
+                     scooter.availability = True
+                     db.session.commit()
     scooters = Scooter.query.all()
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 
@@ -257,11 +258,26 @@ def view_feedback():
 
 @app.route('/view_feedback/resolve_feedback/<int:feedbackId>', methods=['GET', 'POST'])
 def resolve_feedback(feedbackId):
-    print(feedbackId)
     FeedbackCard.query.filter_by(feedbackId = feedbackId).delete()
     db.session.commit()
     flash('Issue removed from database!', category='success')
     return redirect(url_for('view_feedback'))
+
+@app.route('/remove_scooters', methods=['GET', 'POST'])
+def remove_scooters():
+    if current_user.role == 2:
+        unusedScooters = Scooter.query.filter_by(availability = True).all()
+        return render_template('removeScooters.html', title='Unused Scooters', unusedScooters = unusedScooters)
+    else:
+        flash('This page is accessed by managers only', category='error')
+        return redirect(url_for('index'))
+
+@app.route('/remove_scooters/delete_scooter/<int:id>', methods=['GET', 'POST'])
+def delete_scooter(id):
+    Scooter.query.filter_by(id=id).delete()
+    db.session.commit()
+    flash('Scooter removed from database!', category='success')
+    return redirect(url_for('remove_scooters'))
 
 
 # Book scooters view
@@ -282,7 +298,7 @@ def choose_option(scooter_id):
             paymentId = paymentCard.CustomerId
         else:
             paymentId = 0
-        return render_template('options.html', title='Options', options=options, id=scooter_id, 
+        return render_template('options.html', title='Options', options=options, id=scooter_id,
             paymentId=paymentId)
     else:
         flash('Our services are available to our customers only', category='error')
@@ -323,7 +339,7 @@ def storedpaymentbook(scooter_id, option_id, paymentId):
 
         userId = current_user.get_id()
         cDateTime = dt.datetime.now()
-        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, 
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price,
             hours = bookingOption.hours, date=strDate, datetime = cDateTime)
         db.session.add(newBooking)
         db.session.commit()
@@ -352,7 +368,7 @@ def book_scooter(scooter_id, option_id):
 
         userId = current_user.get_id()
         cDateTime = dt.datetime.now()
-        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price, 
+        newBooking = Booking(customerId = userId, scooterId = scooter.id, price = bookingOption.price,
             hours = bookingOption.hours, date=strDate, datetime = cDateTime)
         db.session.add(newBooking)
         db.session.commit()
@@ -686,7 +702,7 @@ def makePercentages(inList):    # input is a list of different rental options
             for j in range(0, len(optionsCount)):   # look for the option in the array
                 if (optionsCount[j] == inList[i]):
                     break   # we found it so stop the loop
-            optionsCount[j] += 1
+                optionsCount[j] = optionsCount[j] + 1
 
     # Now we make a 2d array, with the left side being the number of hours and the right side the percentage
     percentageAndOptions = []
