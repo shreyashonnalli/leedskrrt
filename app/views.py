@@ -227,19 +227,32 @@ def addoptions():
 @app.route('/viewscooters', methods=['GET', 'POST'])
 def viewscooters():
     booking = Booking.query.all()
-    nscooters = Scooter.query.order_by(Scooter.id.desc()).first()
     cDateTime = dt.datetime.now()
-    if nscooters is not None:
-        numScooters = nscooters.id
-        for i in range(1, numScooters):
-            bookingFirst = Booking.query.filter_by(scooterId= i).order_by(Booking.bookingId.desc()).first()
-            if bookingFirst is None:
-                continue
-            if (((cDateTime - bookingFirst.datetime).total_seconds())/3600) > bookingFirst.hours:
-                 scooter = Scooter.query.filter_by(id = i).first()
-                 if scooter is not None:
-                     scooter.availability = True
-                     db.session.commit()
+    scooters = Scooter.query.all()
+    #the commented code is faulty and doesnt work. The updated code isnt tested so please test later.
+    #nscooters = Scooter.query.order_by(Scooter.id.desc()).first()
+    #if nscooters is not None:
+    #    numScooters = nscooters.id
+    #    for i in range(1, numScooters):
+    #        bookingFirst = Booking.query.filter_by(scooterId= i).order_by(Booking.bookingId.desc()).first()
+    #        if bookingFirst is None:
+    #            continue
+    #        if (((cDateTime - bookingFirst.datetime).total_seconds())/3600) > bookingFirst.hours:
+    #            scooter = Scooter.query.filter_by(id = i).first()
+    #            if scooter is not None:
+    #                scooter.availability = True
+    #                db.session.commit()
+    for scooter in scooters:
+        latestBookingWithThisScooter = Booking.query.filter_by(scooterId=scooter.id).order_by(Booking.bookingId.desc()).first()
+        #print(((cDateTime - latestBookingWithThisScooter.datetime).total_seconds())/3600)
+        if latestBookingWithThisScooter is None:
+            scooter.availability = True
+            db.session.commit()
+            continue
+        if(((cDateTime - latestBookingWithThisScooter.datetime).total_seconds())/3600) > latestBookingWithThisScooter.hours:
+            if scooter is not None:
+                scooter.availability = True
+                db.session.commit()
     scooters = Scooter.query.all()
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 
