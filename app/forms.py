@@ -54,6 +54,7 @@ class RegisterManagerForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8),  checkForSpecialChar, checkForPassNumber])
     managerPassword = PasswordField("Manager's password", validators=[DataRequired()])
     submit = SubmitField('Register')
+    employee = BooleanField('Are you registering as an employee?')
 
 class LoginForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])

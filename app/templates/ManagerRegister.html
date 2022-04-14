@@ -33,6 +33,11 @@
                 {{ form.managerPassword(class_='form-control') }}
             </div>
 
+            <div class="form-group">
+                {{ form.employee.label }}
+                {{ form.employee() }}
+            </div>
+
             {% if form.password.errors %}
             <ul class="errors">
                 {% for error in form.password.errors %}

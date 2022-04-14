@@ -88,7 +88,10 @@ def registermanager():
         else:
             # A manager account is indicated by its role number which is 2.
             # This will be used to restrict manager from accessing customer views
-            role = 2
+            if form.employee == False:
+                role = 2
+            else:
+                role = 3
             password = form.password.data
 
             # Encrypts password using bcrypt, this is so the password is not shown as plain-text
@@ -149,6 +152,22 @@ def login():
                     # No cookies used, instead a session with a set duration is used
                     login_user(account, remember=False)
                     return redirect(url_for('managerindex'))
+        elif account and account.role == 3:
+            # Checks to see if password from database matches the inputted password
+            if bcrypt.check_password_hash(account.password, form.password.data):
+                flash("Successfully logged in!", category='success')
+                # If user has ticked remember me checkbox, then a remember me cookie is
+                # created locally
+                if form.remember.data:
+                    # Cookie will stay alive for 14 days, once expired the user will need to
+                    # sign in again. If user signs out manually or clears cookies from browser then
+                    # the user will need to sign in again
+                    login_user(account, remember=True, duration=timedelta(days=14))
+                    return redirect(url_for('employeeindex'))
+                else:
+                    # No cookies used, instead a session with a set duration is used
+                    login_user(account, remember=False)
+                    return redirect(url_for('employeeindex'))
             else:
                 # If the password is incorrect, error message is displayed
                 flash('Email or password is incorrect', category='error')
@@ -185,11 +204,21 @@ def managerindex():
         flash('You are not authorised to view this page', category='error')
         return redirect(url_for('index'))
 
+@app.route('/employeeindex')
+@login_required
+def employeeindex():
+    if current_user.role == 3:
+        home={'description':'Welcome.'}
+        return render_template('employeeHome.html', title='Home', home=home, account=current_user)
+    else:
+        flash('You are not authorised to view this page', category='error')
+        return redirect(url_for('index'))
+
 
 # Add scooters view
 @app.route('/addscooters', methods=['GET', 'POST'])
 def addscooters():
-    if current_user.role == 2:
+    if current_user.role == 2 or current_user.role == 3:
         form = ScooterForm()
         if form.validate_on_submit():
             nlocation=request.form.get("location")
@@ -207,7 +236,7 @@ def addscooters():
 # Add options view
 @app.route('/addoptions', methods=['GET', 'POST'])
 def addoptions():
-    if current_user.role == 2:
+    if current_user.role == 2 or current_user.role == 3:
         form = OptionsForm()
         if form.validate_on_submit():
             nhours = request.form.get("hours")
@@ -261,7 +290,7 @@ def viewscooters():
 # Manager can view feedback
 @app.route('/view_feedback', methods=['GET', 'POST'])
 def view_feedback():
-    if current_user.role == 2:
+    if current_user.role == 2 or current_user.role == 3:
         feedbackCards = FeedbackCard.query.order_by(FeedbackCard.feedbackPriority.desc()).all()
         return render_template('viewfeedback.html', title='Feedback', feedbackCards=feedbackCards)
     else:
@@ -278,7 +307,7 @@ def resolve_feedback(feedbackId):
 
 @app.route('/remove_scooters', methods=['GET', 'POST'])
 def remove_scooters():
-    if current_user.role == 2:
+    if current_user.role == 2 or current_user.role == 3:
         unusedScooters = Scooter.query.filter_by(availability = True).all()
         return render_template('removeScooters.html', title='Unused Scooters', unusedScooters = unusedScooters)
     else:
@@ -557,8 +586,10 @@ def revenue_page():
     # Restrict customers from viewing revenue
     if (current_user.role == 2) == False:
         flash('You are not authorised to view this page', category='error')
-        return redirect(url_for('index'))
-
+        if current_user.role == 1:
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('employeeindex'))
     weekPrice = 0
     weekPrices =[]
     weekDates = []
