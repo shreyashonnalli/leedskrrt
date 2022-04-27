@@ -88,7 +88,7 @@ def registermanager():
         else:
             # A manager account is indicated by its role number which is 2.
             # This will be used to restrict manager from accessing customer views
-            if form.employee == False:
+            if form.employee.data == False:
                 role = 2
             else:
                 role = 3
@@ -278,10 +278,15 @@ def viewscooters():
             scooter.availability = True
             db.session.commit()
             continue
-        if(((cDateTime - latestBookingWithThisScooter.datetime).total_seconds())/3600) > latestBookingWithThisScooter.hours:
+        if(((cDateTime - latestBookingWithThisScooter.datetime).total_seconds()) / 3600) > latestBookingWithThisScooter.hours:
             if scooter is not None:
                 scooter.availability = True
                 db.session.commit()
+        else:
+            timeLeft = (latestBookingWithThisScooter.hours - ((cDateTime - latestBookingWithThisScooter.datetime).total_seconds() / 3600)) * 60
+            timeLeft = math.trunc(timeLeft)
+            scooter.timeLeft = timeLeft
+            db.session.commit()
     scooters = Scooter.query.all()
     return render_template('viewscooters.html', title='Scooters', scooters=scooters)
 

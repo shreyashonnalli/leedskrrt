@@ -15,6 +15,7 @@ class Scooter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.String)
     availability = db.Column(db.Boolean, default = True)
+    timeLeft = db.Column(db.Integer)
 
 class Options(db.Model):
     id = db.Column(db.Integer, primary_key=True)

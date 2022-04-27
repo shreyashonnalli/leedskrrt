@@ -12,7 +12,7 @@
               <a href ="/book_scooter/{{ scooter.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
           {% endif %}
           {% if scooter.availability == False %}
-            <h6><b>Available - </b>Not available</h6>
+            <h6><b>Time left until becomes available - </b>{{scooter.timeLeft}} mins</h6>
           {% endif %}
       <hr>
     {% endfor %}
