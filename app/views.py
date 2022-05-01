@@ -10,12 +10,16 @@ import math
 
 
 # Sends mail through the SMTP protocol
-app.config['MAIL_SERVER']='smtp.mailtrap.io'
-app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = '95ebe879afef61'
-app.config['MAIL_PASSWORD'] = '3ad9d8c3d9cfba'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": 'skrrt8819@gmail.com',
+    "MAIL_PASSWORD": 'qwerty-1'
+}
+
+app.config.update(mail_settings)
 mail = Mail(app)
 
 # Login manager is used to perform tasks like logging users in and out
@@ -432,7 +436,7 @@ def confirmation_page():
         customerId = current_user.get_id()
         booking = Booking.query.filter_by(customerId=customerId).order_by(Booking.bookingId.desc()).first()
         nemail = Account.query.get(customerId)
-        msg = Message('Booking Confirmation', sender =   'raja@mailtrap.io', recipients = [nemail.email])
+        msg = Message('Booking Confirmation', sender =   'skrrt8819@gmail.com', recipients = [nemail.email])
         msg.body = 'Hello ' + str(nemail.email) + '\nBooking ID: '  + str(booking.bookingId) + '\nCustomer ID: ' + str(booking.customerId) + '\nScooter ID: ' + str(booking.scooterId) + '\nPrice: ' + str(booking.price) + '\nHourse: ' + str(booking.hours)
         mail.send(msg)
         return render_template('bookingConfirmation.html', title='Confirmation', booking = booking)
