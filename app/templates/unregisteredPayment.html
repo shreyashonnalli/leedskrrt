@@ -18,6 +18,13 @@
     {% endif %}
 </head>
 
+<style>
+.alert {
+  position:fixed;
+  z-index: 999;
+}
+</style>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
       <div class="container">
@@ -41,24 +48,29 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %} {% if category == 'error' %}
-                <div class="alert alert-danger alter-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-danger alert-dismissible fade show w-100 opacity-75" role="alert">
+                  <div class="row">
+                    <div class='w-90'>{{ message }}</div>
+                    <div class="w-10"><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+                  </div>
                 </div>
             {% else %}
-                <div class="alert alert-success alter-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-success alert-dismissible fade show w-100 opacity-75" role="alert">
+                  <div class="row">
+                    <div class='w-90'>{{ message }}</div>
+                    <div class="w-10"><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+                  </div>
                 </div>
             {% endif %}
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <section class="bg-dark text-light p-3 text-center" >
+
+    <section class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
      <div class="container">
            <h1><span class="text-light">
              <div class="mt-4 mx-4">
-               <div class="container bg-light text-dark p-3 text-center border border-primary rounded">
+               <div class="container bg-light text-dark p-5 text-center border border-primary rounded" style="min-width:600px">
                  <div class="text-center">
                      <h3><b>Credit Card Information<b></h3>
                  </div>
@@ -67,10 +79,11 @@
                      {{ form.hidden_tag() }}
                   <h6 align="left">Email address</h6>
                     <div class="inputbox"> {{ form.email(class_='form-control', placeholder="example@gmail.com") }} </div>
+
                     {% if form.email.errors %}
                     <ul class="errors">
                         {% for error in form.email.errors %}
-                             <li style="color:red; font-size:90%">
+                             <li style="color:red; font-size:50%">
                                  {{ error }}
                              </li>
                          {% endfor %}
@@ -84,7 +97,7 @@
                      {% if form.cardName.errors %}
                      <ul class="errors">
                          {% for error in form.cardName.errors %}
-                             <li style="color:red; font-size:90%">
+                             <li style="color:red; font-size:50%">
                                  {{ error }}
                              </li>
                          {% endfor %}
@@ -98,7 +111,7 @@
                      {% if form.cardNum.errors %}
                      <ul class="errors">
                          {% for error in form.cardNum.errors %}
-                             <li style="color:red; font-size:90%">
+                             <li style="color:red; font-size:50%">
                                  {{ error }}
                              </li>
                          {% endfor %}
@@ -114,7 +127,7 @@
                            {% if form.expiration.errors %}
                            <ul class="errors">
                                {% for error in form.expiration.errors %}
-                                   <li style="color:red; font-size:90%">
+                                   <li style="color:red; font-size:50%">
                                        {{ error }}
                                    </li>
                                {% endfor %}
@@ -122,13 +135,13 @@
                            {% endif %}
                        </div>
 
-                       <div class="form-group col-md-6">
+                       <div class="form-group col-md-6 px-3">
                          <h6 align="left">CVV</h6>
-                         <div class="inputbox"> {{ form.securityNum(class_='form-control' , placeholder='XXX' , style="width: 100px;") }} </div>
+                         <div class="inputbox"> {{ form.securityNum(class_='form-control', placeholder='CCV' , style="width: 100px;") }} </div>
                          {% if form.securityNum.errors %}
                          <ul class="errors">
                              {% for error in form.securityNum.errors %}
-                                 <li style="color:red; font-size:90%">
+                                 <li style="color:red; font-size:50%">
                                      {{ error }}
                                  </li>
                              {% endfor %}
@@ -139,7 +152,7 @@
 
                      <p></p>
 
-                     <div class="px-5 pay"> {{ form.submit(class_="btn btn-primary", style="width:100%") }} </div>
+                     <div> {{ form.submit(class_="btn btn-primary", style="width:100%") }} </div>
                  </form>
                </div>
              </div>

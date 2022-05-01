@@ -14,7 +14,7 @@ def checkForNum(form, field):
 
 def checkForZero(form, field):
     if (field.data < 1 or field.data > 9):
-        raise ValidationError('Must be from 1-9')
+        raise ValidationError('Please select a number from 1-9')
 
 # Custom validator, which checks that the string contains at least one special character
 def checkForSpecialChar(form, field):
@@ -45,16 +45,16 @@ def checkForPassNumber(form, field):
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8), checkForSpecialChar, checkForPassNumber])
-    student = BooleanField('Are you a student?')
-    seniorCitizen = BooleanField('Are you a senior citizen?')
+    student = BooleanField("I'm a student")
+    seniorCitizen = BooleanField("I'm aged 60 or over")
     submit = SubmitField('Register')
 
 class RegisterManagerForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired(), validators.length(min=8),  checkForSpecialChar, checkForPassNumber])
-    managerPassword = PasswordField("Manager's password", validators=[DataRequired()])
+    managerPassword = PasswordField("Employee password", validators=[DataRequired()])
     submit = SubmitField('Register')
-    employee = BooleanField('Are you registering as an employee?')
+    employee = BooleanField("I'm an employee of Skrrt")
 
 class LoginForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
@@ -86,7 +86,7 @@ class FeedbackForm(FlaskForm):
     scooterId = StringField('ScooterId', validators=[DataRequired()])
     feedback = StringField('feedback', validators=[DataRequired()])
     feedbackPriority = IntegerField('feedbackPriority', validators=[DataRequired(), checkForZero])
-    submit = SubmitField('Send Feedback')
+    submit = SubmitField('Feedback')
 
 
 class UnregisteredPaymentForm(FlaskForm):

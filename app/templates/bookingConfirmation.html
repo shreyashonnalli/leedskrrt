@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
 <h1>Booking Confirmation</h1>
+<br>
 
     <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
-
+<div class='p-5 container border border-light' style="max-width: 500px;">
           <h5><b>{{booking.bookingId}}</b></h5>
           <h6><b>Scooter Number -</b> {{booking.scooterId}}</h6>
           <h6><b>Customer - </b>{{booking.customerId}}</h6>
@@ -12,5 +13,5 @@
           <h6><b>Hours - </b>{{booking.hours}}</h6>
       <hr>
       <a href ="/index" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Home</a>
-
+</div>
 {% endblock %}

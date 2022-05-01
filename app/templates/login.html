@@ -1,10 +1,8 @@
 {% extends "base2.html" %}
 
 {% block content %}
-<section class="vh-100">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-6 text-light bg-dark">
+    <div class="row vh-100">
+      <div class="col-md-6 text-light bg-dark">
 
         <div class="p-5 ms-xl-4">
           <span class="h1 fw-bold mb-0-5">Skrrt</span>
@@ -42,7 +40,7 @@
               {{ form.submit(class_="btn btn-primary", style="width:100%") }}
             </div>
 
-            <p class="small mb-5 pb-lg-2"><a class="text-light" href="#!">Forgot password?</a></p>
+            <p class="small pb-lg-2"><a class="text-light" href="#!">Forgot password?</a></p>
             <p>Don't have an account? <a href="{{ url_for('register') }}"  id="register" class="link-info">Register here</a></p>
             <p>Booking as a guest? <a href="{{ url_for('unregistered_booking') }}" id="unregistered_booking" class="link-info">Checkout here</a></p>
 
@@ -51,12 +49,10 @@
         </div>
 
       </div>
-      <div class="col-sm-6 px-0 d-none d-sm-block">
-        <img src=/static/skrrt.jpeg class="w-100 vh-100" style="object-fit: cover; object-position: left;">
-        <img src=/static/blank.jpg class="w-100 vh-100" style="object-fit: cover; object-position: left;">
+      <div class="col-md-6 px-0 d-none d-md-block">
+        <img src=/static/skrrt.jpeg class="w-100 h-100" style="object-fit: cover; object-position: left;">
       </div>
     </div>
-  </div>
   <!-- Cookie Consent by TermsFeed (https://www.TermsFeed.com) -->
   <script type="text/javascript" src="https://www.termsfeed.com/public/cookie-consent/4.0.0/cookie-consent.js" charset="UTF-8"></script>
   <script type="text/javascript" charset="UTF-8">
@@ -67,5 +63,4 @@
 
   <noscript>ePrivacy and GPDR Cookie Consent by <a href="https://www.TermsFeed.com/" rel="nofollow">TermsFeed Generator</a></noscript>
   <!-- End Cookie Consent by TermsFeed (https://www.TermsFeed.com) -->
-</section>
 {% endblock %}

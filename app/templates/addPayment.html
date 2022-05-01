@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add Payment Details</h1>
-<form action="" method="post" name="Add Payment Details">
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
+<form action="" method="post" name="Add Payment" class='p-5 container border border-light' align="left" style="max-width: 700px;">
     {{ form.hidden_tag() }}
-
-    <div class="container" style=" width:600px">
+      <h1 align="left">Details for debit or credit card:</h1>
+      <br>
       <h6 align="left"><b>Name on Card</b></h6>
-      {{ form.cardName(class_='form-control', placeholder='John Doe') }}
+      {{ form.cardName(class_='form-control', placeholder='John Doe', style="max-width: 500px;") }}
       {% if form.cardName.errors %}
       <ul class="errors">
           {% for error in form.cardName.errors %}
@@ -20,7 +20,7 @@
       <p></p>
 
           <h6 align="left"><b>Card number</b></h6>
-          {{ form.cardNum(class_='form-control', placeholder='XXXX XXXX XXXX XXXX', style="width: 300px;") }}
+          {{ form.cardNum(class_='form-control', placeholder='XXXX XXXX XXXX XXXX', style="max-width: 300px;") }}
           {% if form.cardNum.errors %}
           <ul class="errors">
               {% for error in form.cardNum.errors %}
@@ -34,7 +34,7 @@
           <p></p>
 
           <h6 align="left"><b>Expiry Date</b></h6>
-          {{ form.expiryDate(class_='form-control', placeholder='MM/YY', style="width: 100px;") }}
+          {{ form.expiryDate(class_='form-control', placeholder='MM/YY', style="max-width: 100px;") }}
           {% if form.expiryDate.errors %}
           <ul class="errors">
               {% for error in form.expiryDate.errors %}
@@ -47,10 +47,7 @@
 
       <p></p>
 
-      <div class="form-group px-5">
-          {{ form.submit(class_="btn btn-primary", style="width:100%") }}
-      </div>
-    </div>
+      {{ form.submit(class_="btn btn-primary") }}
 </form>
-
+</div>
 {% endblock %}

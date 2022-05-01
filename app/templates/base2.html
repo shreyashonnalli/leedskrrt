@@ -16,28 +16,41 @@
         <title>Untitled</title>
     {% endif %}
 </head>
+<style>
+.alert {
+  position:fixed;
+  z-index: 999;
+}
+</style>
 
 <body>
+  <div>
 
-    <!-- Flash messages for categories (e.g. success, error) -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %} {% if category == 'error' %}
-                <div class="alert alert-danger alter-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <!-- Flash messages for categories (e.g. success, error) -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, message in messages %} {% if category == 'error' %}
+              <div class="alert alert-danger alert-dismissible fade show w-100 opacity-75" role="alert">
+                <div class="row">
+                  <div class='w-90'>{{ message }}</div>
+                  <div class="w-10"><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
                 </div>
-            {% else %}
-                <div class="alert alert-success alter-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+          {% else %}
+              <div class="alert alert-success alert-dismissible fade show w-100 opacity-75" role="alert">
+                <div class="row">
+                  <div class='w-90'>{{ message }}</div>
+                  <div class="w-10"><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
                 </div>
-            {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+              </div>
+          {% endif %}
+          {% endfor %}
+      {% endif %}
+  {% endwith %}
 
-  {% block content %}{% endblock %}
+  </div><div>
+      {% block content %}{% endblock %}
+  </div>
 
     <!-- jQuery, Popper.js, and Bootstrap JS respectively -->
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="

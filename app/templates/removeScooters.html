@@ -1,7 +1,8 @@
 {% extends "baseManager.html" %}
 {% block content %}
-
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
 <h1>All Unbooked Scooters</h1>
+<br>
 
     <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
     {% for scooter in unusedScooters %}
@@ -10,5 +11,5 @@
             <a href ="/remove_scooters/delete_scooter/{{ scooter.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Delete Scooter</a>
       <hr>
     {% endfor %}
-
+</div>
 {% endblock %}

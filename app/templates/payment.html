@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
 <div class="mt-4 mx-4">
-  <div class="container bg-light text-dark p-3 text-center border border-primary rounded">
+  <div class="container bg-light text-dark p-3 text-center border border-primary rounded"style="min-width:600px">
     <div class="text-center">
         <h3><b>Credit card<b></h3>
     </div>
@@ -51,7 +52,7 @@
               {% endif %}
           </div>
 
-          <div class="form-group col-md-6">
+          <div class="form-group col-md-6 px-3">
             <h6 align="left">CVV</h6>
             <div class="inputbox"> {{ form.securityNum(class_='form-control' , placeholder='XXX' , style="width: 100px;") }} </div>
             {% if form.securityNum.errors %}
@@ -68,8 +69,9 @@
 
         <p></p>
 
-        <div class="px-5 pay"> {{ form.submit(class_="btn btn-primary", style="width:100%") }} </div>
+        <div > {{ form.submit(class_="btn btn-primary", style="width:100%") }} </div>
     </form>
   </div>
+</div>
 </div>
 {% endblock %}

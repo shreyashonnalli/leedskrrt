@@ -58,7 +58,7 @@ def register():
             student = form.student.data
             seniorCitizen = form.seniorCitizen.data
             if student == True and seniorCitizen == True:
-                flash('Cant apply for student discount and senior citizen discount',
+                flash('Please select ONE discount option: Student or Over 60s',
                     category='error')
                 return redirect(url_for('register'))
             # Encrypts password using bcrypt, this is so the password is not shown as
@@ -470,7 +470,7 @@ def add_payment_details():
             db.session.commit()
             flash("Payment Method Added")
             return redirect(url_for("index"))
-        return render_template('addPayment.html', title='Add Payment Detail', form=form)
+        return render_template('addPayment.html', title='Add Payment Details', form=form)
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))

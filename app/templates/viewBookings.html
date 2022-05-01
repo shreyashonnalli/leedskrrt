@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="bg-dark text-light p-3 text-center">
 <h2><b>Ongoing Bookings</b></h2>
 <hr>
     {% for ongoing in ongoing %}
@@ -24,5 +25,6 @@
           <h6><b>Date and Time - </b> {{expired.datetime}} </h6>
       <hr>
     {% endfor %}
+</div>
 
 {% endblock %}

@@ -1,8 +1,9 @@
 {% extends "baseManager.html" %}
 
 {% block content %}
-<h1>Add Options</h1>
-<form action="" method="post" name="Add Options">
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
+<form action="" method="post" name="Add Options" class='p-5 container border border-light' align="left" style="max-width: 700px;">
+  <h1>Add Options</h1>
     {{ form.hidden_tag() }}
 
     <br>
@@ -24,8 +25,8 @@
         [{{ error }}]
      </div>
     {% endfor %}
-
+<br>
     <p><input type="submit" class="btn btn-primary" value="Add"></p>
 </form>
-
+</div>
 {% endblock %}

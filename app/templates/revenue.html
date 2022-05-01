@@ -33,6 +33,7 @@
             <li class="nav-item"><a class="nav-link" href="/addoptions">Add Options</a></li>
             <li class="nav-item"><a class="nav-link" href="/revenue">Revenue</a></li>
             <li class="nav-item"><a class="nav-link" href="/view_feedback">View Feedback</a></li>
+            <li class="nav-item"><a class="nav-link" href="/remove_scooters">Remove Scooters</a></li>
             <li class="nav-item"><a class="nav-link" href="/logout">Sign out</a></li>
           </ul>
         </div>
@@ -44,14 +45,13 @@
     <!DOCTYPE html>
     <html>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <head>
-      <br>
-        <h1><b>Revenue since the beginning of {{month}}</h1></b><br>
-    </head>
 
+      <br><br>
     <body>
+      <h1 class='text-center'>Revenue since the beginning of {{month}}</h1>
+      <br><br>
         <!--our line graph-->
-        <canvas id="lineChart" style="width:100%;max-width:600px"></canvas>
+        <canvas id="lineChart" class='p-5 container border border-dark' style="min-width: 70vw;"></canvas>
 
         <script>
 
@@ -102,13 +102,13 @@
                 options: {
                 title: {
                     display: true,
-                    text: "Number of hours a scooter is rented for on most profitable day"
+                    text: "Number of hours a scooter is rented for on most profitable day",
                 }
                 }
             });
         </script>
         <!-- end of our pie chart-->
-
+      <dir class='text-dark p-5 container'>
         <br><p>Revenue for today: £{{dayPrice}}</p><br>
         <p>Revenue for past week: £{{weekPrice}}</p>
         {% for i in range(0, weekPriceLen) %}
@@ -121,6 +121,7 @@
         {% for i in range(0, percentagesLen) %}
         Percentage of people who rented for {{percentages[i][0]}} hours: {{percentages[i][1]}}<br>
         {% endfor %}
+      </dir>
     </body>
     </html>
     {% endblock %}

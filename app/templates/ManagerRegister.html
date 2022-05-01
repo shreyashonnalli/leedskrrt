@@ -1,10 +1,8 @@
 {% extends "base2.html" %}
 
 {% block content %}
-<section class="vh-100">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-6 text-light bg-dark">
+    <div class="row vh-100">
+      <div class="col-md-6 text-light bg-dark">
 
         <div class="p-5 ms-xl-4">
           <span class="h1 fw-bold mb-0-5">Skrrt</span>
@@ -16,17 +14,21 @@
             <!-- The tag below is use to prevent CSRF -->
             {{ form.hidden_tag() }}
 
-            <h3 class="fw-normal mb-3 pb-3 text-primary" style="letter-spacing: 1px;">Manager Registration</h3>
+            <h3 class="fw-normal mb-3 pb-3 text-primary" style="letter-spacing: 1px;">Employee Registration</h3>
 
             <div class="form-group">
                 {{ form.email.label(class='form-control-label') }}
                 {{ form.email(class_='form-control') }}
             </div>
 
+            <br>
+
             <div class="form-group">
                 {{ form.password.label(class='form-control-label') }}
                 {{ form.password(class_='form-control') }}
             </div>
+
+            <br>
 
             <div class="form-group">
                 {{ form.managerPassword.label(class='form-control-label') }}
@@ -47,24 +49,20 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            <br
-
             <br>
 
             <div class="form-group">
               {{ form.submit(class_="btn btn-primary", style="width:100%") }}
             </div>
-
+            <br>
             <p>Already have an account? <a href="{{ url_for('login') }}" id="login" class="link-info">Login here</a></p>
             <p>Registering as a user? <a href="{{ url_for('register') }}" id="register" class="link-info">Register here</a></p>
           </form>
         </div>
       </div>
-      <div class="col-sm-6 px-0 d-none d-sm-block">
-        <img src=/static/skrrt.jpeg class="w-100 vh-100" style="object-fit: cover; object-position: left;">
-        <img src=/static/blank.jpg class="w-100 vh-100" style="object-fit: cover; object-position: left;">
+      <div class="col-md-6 px-0 d-none d-md-block">
+        <img src=/static/skrrt.jpeg class="w-100 h-100" style="object-fit: cover; object-position: left;">
       </div>
     </div>
-  </div>
-</section>S
+
 {% endblock %}

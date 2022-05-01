@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
 <h1>All Scooters</h1>
 
     <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
@@ -14,5 +14,5 @@
           {% endif %}
       <hr>
     {% endfor %}
-
+</div>
 {% endblock %}

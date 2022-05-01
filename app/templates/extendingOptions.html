@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-
+<div class="bg-dark text-light p-3 text-center" style="min-height: 90vh;">
 <h1>Extending Options</h1>
 
     <!-- Gets all the assessments from database and outputs incomplete ones (where done == False)  -->
@@ -11,5 +11,5 @@
           <a href ="/extend_scooter_option/{{ bookingId }}/{{ option.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Extend Booking</a>
       <hr>
     {% endfor %}
-
+</div>
 {% endblock %}
