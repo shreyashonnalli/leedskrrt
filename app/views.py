@@ -424,7 +424,7 @@ def book_scooter(scooter_id, option_id):
         db.session.add(newBooking)
         db.session.commit()
         flash("Scooter booked")
-        return redirect(url_for("payment"))
+        return redirect(url_for("confirmation_page"))
     else:
         flash('Our services are available to our customers only', category='error')
         return redirect(url_for('managerindex'))
@@ -446,13 +446,12 @@ def confirmation_page():
 
 
 # Payment view
-@app.route('/payment', methods=['GET', 'POST'])
-def payment():
+@app.route('/book_scooter/<int:scooter_id>/<int:option_id>/payment', methods=['GET', 'POST'])
+def payment(scooter_id, option_id):
     if current_user.role == 1:
         form = PaymentForm()
         if form.validate_on_submit():
-            flash("Payment Succesful")
-            return redirect(url_for("confirmation_page"))
+            return redirect(url_for('book_scooter', scooter_id=scooter_id, option_id=option_id))
         return render_template('payment.html', title='Payment', form=form)
     else:
         flash('Our services are available to our customers only', category='error')
@@ -531,7 +530,7 @@ def unregistered_book_scooter(scooter_id, option_id):
 def unregistered_confirmation_page():
         booking = UnregisteredBooking.query.order_by(UnregisteredBooking.bookingId.desc()).first()
         nemail = booking.email
-        msg = Message('Booking Confirmation', sender =   'raja@mailtrap.io', recipients = [nemail])
+        msg = Message('Booking Confirmation', sender =   'skrrt8819@gmail.com', recipients = [nemail])
         msg.body = 'Hello ' + str(nemail) + '\nBooking ID: '  + str(booking.bookingId) + '\nScooter ID: ' + str(booking.scooterId) + '\nPrice: ' + str(booking.price) + '\nHours: ' + str(booking.hours)
         mail.send(msg)
         return render_template('unregisteredConfirmation.html', title='Confirmation', booking = booking)

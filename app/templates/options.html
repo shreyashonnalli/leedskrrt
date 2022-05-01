@@ -8,7 +8,7 @@
           <h5><b>{{option.id}}</b></h5>
           <h6><b>Hours -</b> {{option.hours}}</h6>
           <h6><b>Price -</b> {{option.price}}</h6>
-          <a href ="/book_scooter/{{ id }}/{{ option.id }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
+          <a href ="/book_scooter/{{ id }}/{{ option.id }}/payment" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book Scooter</a>
           {% if paymentId != 0 %}
             <a href ="/book_scooter/{{ id }}/{{ option.id }}/{{ paymentId }}" class="btn btn-primary btn-sm" role="button" aria-disabled="true">Book with stored card payment</a>
           {% endif %}
