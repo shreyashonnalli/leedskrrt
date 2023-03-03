@@ -1,12 +1,12 @@
 # Scooter Project: A university project
 
 Software Engineering project
-sc20sh
-sc20ap
-sc20sys
-sc20l2s
-sc20mazp
-sc20rfm
+1. sc20sh
+2. sc20ap
+3. sc20sys
+4. sc20l2s
+5. sc20mazp
+6. sc20rfm
 
 ## Getting started
 
